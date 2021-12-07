@@ -7,7 +7,7 @@ with open("readme.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name='cythonbuilder',  # should match the package folder
     packages=['cythonbuilder'],  # should match the package folder
-    version='0.0.1',  # important for updates
+    version='0.0.2',  # important for updates
     license='MIT',  # should match your chosen license
     description='CythonBuilder; automated compiling and packaging of Cython code',
     long_description=long_description,  # loads your README.md
@@ -31,5 +31,5 @@ setuptools.setup(
         'Programming Language :: Python :: 3.9',
     ],
 
-    download_url="https://github.com/mike-huls/cythonbuilder/archive/refs/tags/v0.0.1.tar.gz",
+    download_url="https://github.com/mike-huls/cythonbuilder/archive/refs/tags/v0.0.2.tar.gz",
 )
