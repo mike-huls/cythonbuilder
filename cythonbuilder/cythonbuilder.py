@@ -31,32 +31,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.CRITICAL)
 
 
-# def folder_structure_exists():
-#     """ Checks whether the valid folder structure exists:
-#     - root
-#         -ext
-#             - cythonfiles
-#     """
-#     dir_root = os.path.realpath(os.curdir)
-#     dir_extensions = os.path.join(dir_root, dirname_extensions)
-#
-#     required_folders = [dir_root, dir_extensions]
-#     for folder in required_folders:
-#         print(folder, os.path.isdir(folder))
-#
-#     quit()
-#     print(os.path.isdir(dir_root))
-#
-#     root_subdirs = [t for t in os.listdir(dir_root) if os.path.isdir(os.path.join(dir_root, t))]
-#     if (dirname_extensions not in root_subdirs):
-#         return False
-#
-#     pyx_dir = [t for t in os.listdir(dir_extensions) if (os.path.isdir(os.path.join(dir_extensions, t)))]
-#     if (dirname_pyxfiles not in pyx_dir):
-#         return False
-#
-#     return True
-
 def init():
     """ Creates a folder-structure for all pyx-files and resulting so-files like
     - root
@@ -85,7 +59,7 @@ def help():
     print(f"""{appname}
     Automatically builds and packages your Cython code 
     1. Initialize {appname} with `{appcmd} init` 
-    2. Place all .pyx Cython files in the {dirname_pyxfiles} folder
+    2. Place all .pyx Cython files in {dirname_extensions}/{dirname_pyxfiles}
     3. Call `{appcmd} build` to build and package all .pyx files in {dirname_extensions}/{dirname_pyxfiles} 
         Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
     4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
