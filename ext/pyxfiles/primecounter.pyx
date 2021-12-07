@@ -1,5 +1,6 @@
+cimport cython
 
-
+@cython.cdivision(True)
 cpdef int prime_counter_cy(int range_from, int range_til):
     """ Returs the number of found prime numbers within a range. from and till are greedy """
     cdef int prime_count = 0

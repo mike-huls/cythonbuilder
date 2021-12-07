@@ -295,10 +295,11 @@ body.cython { font-family: courier; font-size: 12; }
     Click on a line that starts with a "<code>+</code>" to see the C code that Cython generated for it.
 </p>
 <p>Raw output: <a href="primecounter.c">primecounter.c</a></p>
-<div class="cython"><pre class="cython line score-0">&#xA0;<span class="">01</span>: </pre>
+<div class="cython"><pre class="cython line score-0">&#xA0;<span class="">01</span>: cimport cython</pre>
 <pre class="cython line score-0">&#xA0;<span class="">02</span>: </pre>
-<pre class="cython line score-46" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">03</span>: cpdef int prime_counter_cy(int range_from, int range_til):</pre>
-<pre class='cython code score-46 '>static PyObject *__pyx_pw_12primecounter_1prime_counter_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+<pre class="cython line score-0">&#xA0;<span class="">03</span>: @cython.cdivision(True)</pre>
+<pre class="cython line score-44" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">04</span>: cpdef int prime_counter_cy(int range_from, int range_til):</pre>
+<pre class='cython code score-44 '>static PyObject *__pyx_pw_12primecounter_1prime_counter_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_f_12primecounter_prime_counter_cy(int __pyx_v_range_from, int __pyx_v_range_til, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_prime_count;
   int __pyx_v_num;
@@ -308,9 +309,6 @@ static int __pyx_f_12primecounter_prime_counter_cy(int __pyx_v_range_from, int _
   <span class='refnanny'>__Pyx_RefNannySetupContext</span>("prime_counter_cy", 0);
 /* … */
   /* function exit code */
-  __pyx_L1_error:;
-  <span class='pyx_c_api'>__Pyx_WriteUnraisable</span>("primecounter.prime_counter_cy", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
-  __pyx_r = 0;
   __pyx_L0:;
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
@@ -348,11 +346,11 @@ static PyObject *__pyx_pw_12primecounter_1prime_counter_cy(PyObject *__pyx_self,
         case  1:
         if (likely((values[1] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_range_til)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prime_counter_cy", 1, 2, 2, 1); <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prime_counter_cy", 1, 2, 2, 1); <span class='error_goto'>__PYX_ERR(0, 4, __pyx_L3_error)</span>
         }
       }
       if (unlikely(kw_args &gt; 0)) {
-        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "prime_counter_cy") &lt; 0)) <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L3_error)</span>
+        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "prime_counter_cy") &lt; 0)) <span class='error_goto'>__PYX_ERR(0, 4, __pyx_L3_error)</span>
       }
     } else if (<span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -360,12 +358,12 @@ static PyObject *__pyx_pw_12primecounter_1prime_counter_cy(PyObject *__pyx_self,
       values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
       values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
     }
-    __pyx_v_range_from = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[0]); if (unlikely((__pyx_v_range_from == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L3_error)</span>
-    __pyx_v_range_til = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[1]); if (unlikely((__pyx_v_range_til == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L3_error)</span>
+    __pyx_v_range_from = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[0]); if (unlikely((__pyx_v_range_from == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 4, __pyx_L3_error)</span>
+    __pyx_v_range_til = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[1]); if (unlikely((__pyx_v_range_til == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 4, __pyx_L3_error)</span>
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prime_counter_cy", 1, 2, 2, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L3_error)</span>
+  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prime_counter_cy", 1, 2, 2, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); <span class='error_goto'>__PYX_ERR(0, 4, __pyx_L3_error)</span>
   __pyx_L3_error:;
   <span class='pyx_c_api'>__Pyx_AddTraceback</span>("primecounter.prime_counter_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
@@ -386,7 +384,7 @@ static PyObject *__pyx_pf_12primecounter_prime_counter_cy(CYTHON_UNUSED PyObject
   <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
   <span class='refnanny'>__Pyx_RefNannySetupContext</span>("prime_counter_cy", 0);
   <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
-  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyInt_From_int</span>(__pyx_f_12primecounter_prime_counter_cy(__pyx_v_range_from, __pyx_v_range_til, 0));<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyInt_From_int</span>(__pyx_f_12primecounter_prime_counter_cy(__pyx_v_range_from, __pyx_v_range_til, 0));<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -402,47 +400,43 @@ static PyObject *__pyx_pf_12primecounter_prime_counter_cy(CYTHON_UNUSED PyObject
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
-</pre><pre class="cython line score-0">&#xA0;<span class="">04</span>:     """ Returs the number of found prime numbers within a range. from and till are greedy """</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">05</span>:     cdef int prime_count = 0</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">05</span>:     """ Returs the number of found prime numbers within a range. from and till are greedy """</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">06</span>:     cdef int prime_count = 0</pre>
 <pre class='cython code score-0 '>  __pyx_v_prime_count = 0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">06</span>:     cdef int num</pre>
-<pre class="cython line score-0">&#xA0;<span class="">07</span>:     cdef int candidate_prime</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">08</span>:     for num in range(range_from, range_til + 1):</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">07</span>:     cdef int num</pre>
+<pre class="cython line score-0">&#xA0;<span class="">08</span>:     cdef int candidate_prime</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">09</span>:     for num in range(range_from, range_til + 1):</pre>
 <pre class='cython code score-0 '>  __pyx_t_1 = (__pyx_v_range_til + 1);
   __pyx_t_2 = __pyx_t_1;
   for (__pyx_t_3 = __pyx_v_range_from; __pyx_t_3 &lt; __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_num = __pyx_t_3;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">09</span>:       if (num &gt; 1):</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">10</span>:       if (num &gt; 1):</pre>
 <pre class='cython code score-0 '>    __pyx_t_4 = ((__pyx_v_num &gt; 1) != 0);
     if (__pyx_t_4) {
 /* … */
     }
   }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">10</span>:         for candidate_prime in range(2, num):</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">11</span>:         for candidate_prime in range(2, num):</pre>
 <pre class='cython code score-0 '>      __pyx_t_5 = __pyx_v_num;
       __pyx_t_6 = __pyx_t_5;
       for (__pyx_t_7 = 2; __pyx_t_7 &lt; __pyx_t_6; __pyx_t_7+=1) {
         __pyx_v_candidate_prime = __pyx_t_7;
-</pre><pre class="cython line score-0">&#xA0;<span class="">11</span>: </pre>
-<pre class="cython line score-5" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">12</span>:           if ((num % candidate_prime) == 0):</pre>
-<pre class='cython code score-5 '>        if (unlikely(__pyx_v_candidate_prime == 0)) {
-          <span class='py_c_api'>PyErr_SetString</span>(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-          <span class='error_goto'>__PYX_ERR(0, 12, __pyx_L1_error)</span>
-        }
-        __pyx_t_4 = ((__Pyx_mod_int(__pyx_v_num, __pyx_v_candidate_prime) == 0) != 0);
+</pre><pre class="cython line score-0">&#xA0;<span class="">12</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">13</span>:           if ((num % candidate_prime) == 0):</pre>
+<pre class='cython code score-0 '>        __pyx_t_4 = (((__pyx_v_num % __pyx_v_candidate_prime) == 0) != 0);
         if (__pyx_t_4) {
 /* … */
         }
       }
       /*else*/ {
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">13</span>:             break</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">14</span>:             break</pre>
 <pre class='cython code score-0 '>          goto __pyx_L7_break;
-</pre><pre class="cython line score-0">&#xA0;<span class="">14</span>:         else:</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">15</span>:           prime_count += 1</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">15</span>:         else:</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">16</span>:           prime_count += 1</pre>
 <pre class='cython code score-0 '>        __pyx_v_prime_count = (__pyx_v_prime_count + 1);
       }
       __pyx_L7_break:;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">16</span>:     return prime_count</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">17</span>:     return prime_count</pre>
 <pre class='cython code score-0 '>  __pyx_r = __pyx_v_prime_count;
   goto __pyx_L0;
 </pre></div></body></html>

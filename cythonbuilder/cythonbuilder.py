@@ -10,17 +10,17 @@ from glob import glob
 
 dirname_extensions = "ext"
 dirname_pyxfiles = "pyxfiles"
-dirname_build = "build"
 dirname_annotations = "annotations"
 
 path_root_dir = os.path.realpath(os.curdir)
 path_extensions_dir = os.path.join(path_root_dir, dirname_extensions)
 path_pyx_dir = os.path.join(path_extensions_dir, dirname_pyxfiles)
-path_build_dir = os.path.join(path_extensions_dir, dirname_build)
 path_annotations_dir = os.path.join(path_extensions_dir, dirname_annotations)
 path_setuppy_build_dir = os.path.join(path_root_dir, 'build')
 
 appname = "CythonBuilder"
+appcmd = os.path.splitext(os.path.basename(__file__))[0]
+
 
 logging.basicConfig(
     level=logging.NOTSET,
@@ -65,7 +65,7 @@ def init():
    """
 
 
-    required_folders = [path_root_dir, path_extensions_dir, path_pyx_dir, path_build_dir, path_annotations_dir]
+    required_folders = [path_root_dir, path_extensions_dir, path_pyx_dir, path_annotations_dir]
 
 
     # Ensure folder structure exists
@@ -75,20 +75,29 @@ def init():
 
     # Warn if folder contain files
     for _dir in [path_extensions_dir, path_pyx_dir]:
-        if (len([t for t in os.listdir(_dir) if (not os.path.isdir(t))]) > 0):
+        file_list = next(os.walk(_dir), (None, None, []))[2]  # [] if no file
+        if (len(file_list) > 0):
             logging.warning(f"{_dir} folder is not empty")
 
     logging.info("Initialized")
 
 def help():
     print(f"""{appname}
-    -h, --help             Help
-    init                   Initialized the folders
-    -b, --build            
-    \t --debug         Debugging mode (default False)
-    \t --no-annotation     Disables generating the annotations html (default True)
-    \t --no-numpy-include  Prevents numpy being included in setup.py include_dirs (default True)
-    \t --no-cleanup        Prevents removal of intermediate C files that Cython generates (default True)
+    Automatically builds and packages your Cython code 
+    1. Initialize {appname} with `{appcmd} init` 
+    2. Place all .pyx Cython files in the {dirname_pyxfiles} folder
+    3. Call `{appcmd} build` to build and package all .pyx files in {dirname_extensions}/{dirname_pyxfiles} 
+        Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
+    4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
+
+    init        Initialized the folders
+    build       Build and package cython files
+      --debug             Debugging mode (default False)
+      --no-annotation     Disables generating the annotations html (default True)
+      --no-numpy-include  Prevents numpy being included in setup.py include_dirs (default True)
+      --no-cleanup        Prevents removal of intermediate C files that Cython generates (default True)
+    help        Show this screen
+    
 """)
 
 
@@ -126,7 +135,7 @@ def build(annotation:bool=True, numpy_includes:bool=True, debugmode:bool=False, 
 
     # NO pyx files found
     if (len(target_pyx_filepaths) == 0):
-        logging.error('No valid source filenames were supplied.')
+        logging.error('No pyx files found to compile')
         sys.exit(1)
 
 
@@ -166,7 +175,7 @@ def build(annotation:bool=True, numpy_includes:bool=True, debugmode:bool=False, 
         cmdclass = {'build_ext': build_ext},
         include_dirs=include_dirs,
         ext_modules = cythonize(ext_modules),
-        buid_dir=path_build_dir
+        # buid_dir=path_build_dir
     )
 
     # Cleanup
@@ -184,20 +193,15 @@ def build(annotation:bool=True, numpy_includes:bool=True, debugmode:bool=False, 
         shutil.move(htmlpath, os.path.join(path_annotations_dir, os.path.basename(htmlpath)))
 
         # Move all pyd files to the build dir
-        for file in os.listdir(path_root_dir):
+        for file in [f for f in os.listdir(path_root_dir) if '.pyd' in f]:
             shutil.move(
                 src=os.path.join(path_root_dir, file),
-                dst=os.path.join(path_build_dir, file)
+                dst=os.path.join(path_extensions_dir, file)
             )
 
+    # Remove setup.py build dir that contains compiled c
+    shutil.rmtree(path_setuppy_build_dir)
 
-        # Remove setup.py build dir that contains compiled c
-        shutil.rmtree(path_setuppy_build_dir)
-
-
-def __clean_argument(argu:str):
-    """ Lowercases and strips an argument """
-    return argu.strip().lower()
 
 
 if (__name__ == "__main__"):
@@ -209,11 +213,11 @@ if (__name__ == "__main__"):
 
 
 
-    if (__clean_argument(_args[0]) == 'init'):
+    if (_args[0] == 'init'):
         init()
-    elif (__clean_argument(_args[0]) in ('--help', 'h', 'help')):
+    elif (_args[0] in ('--help', 'h', 'help')):
         help()
-    elif (__clean_argument(_args[0]) in ('build')):
+    elif (_args[0] in ('build')):
         do_annotate_html = len(set(_args) & {'--no-annotation'}) == 0
         do_debug = len(set(_args) & {'--debug'}) > 0
         do_include_numpy = len(set(_args) & {'--no-numpy-include'}) == 0
