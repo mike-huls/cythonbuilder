@@ -178,7 +178,7 @@ def build(annotation:bool=True, numpy_includes:bool=True, debugmode:bool=False, 
 
 
 
-if (__name__ == "__main__"):
+def main():
     _args = sys.argv[1:]
 
     if (len(_args) == 0):
@@ -202,3 +202,5 @@ if (__name__ == "__main__"):
     else:
         help()
 
+if (__name__ == "__main__"):
+    main()

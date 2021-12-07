@@ -31,5 +31,5 @@ setuptools.setup(
         'Programming Language :: Python :: 3.9',
     ],
 
-    download_url="https://github.com/mike-huls/cythonbuilder/archive/refs/tags/0.0.2.tar.gz",
+    download_url="https://github.com/mike-huls/cythonbuilder/archive/refs/tags/v0.0.3.tar.gz",
 )
