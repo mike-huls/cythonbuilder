@@ -20,7 +20,8 @@ setuptools.setup(
     },
     install_requires=['Cython'],  # list all packages that your package uses
     keywords=["pypi", "Cython", "setup", "packaging", "compilation"],  # descriptive meta-data
-    classifiers=[  # https://pypi.org/classifiers
+    classifiers=[
+        # https://pypi.org/classifiers
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Documentation',
