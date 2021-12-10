@@ -57,8 +57,7 @@ def init():
 
     logging.info("Initialized")
 
-def help():
-    print(f"""{appname}
+print(f"""{appname}
     Automatically builds and packages your Cython code 
     1. Initialize {appname} with `{appcmd} init` 
     2. Place all .pyx Cython files in {dirname_extensions}/{dirname_pyxfiles}
@@ -71,13 +70,17 @@ def help():
     init        Initialized the folders
     help        Show this screen
     build       Build and package cython files
-      --no-annotation     Disables generating the annotations html (default True)
       --no-numpy-required Prevents numpy being included in setup.py include_dirs (default True)
+      --no-annotation     Disables generating the annotations html (default True)
       --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
-    clean
+    clean       Cleans up project. Puts all built files in {dirname_extensions}, removes 
+      --no-annotation     Disables generating the annotations html (default True)
+      --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
     """
 
-    )
+      )
+def help():
+    pass
 
 def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenames:[str]=None):
     """ pyx -> c -> so
@@ -269,7 +272,8 @@ def main():
             )
     elif (command == 'clean'):
         keep_c_files = True if ('--keep-c-files' in _args) else False           # default False
-        cleanup(keep_c_files=keep_c_files)
+        keep_annotations = False if ('--no-annotations' in _args) else True         # default False
+        cleanup(keep_c_files=keep_c_files, keep_annotation_files=keep_annotations)
     elif (command == 'test'):
         test(_args)
 
