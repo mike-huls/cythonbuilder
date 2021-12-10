@@ -31,6 +31,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-
     download_url="https://github.com/mike-huls/cythonbuilder/archive/refs/tags/v0.0.5.tar.gz",
 )
+
+# python setup.py sdist
+# python -m twine upload dist/*

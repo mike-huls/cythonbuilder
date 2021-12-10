@@ -25,7 +25,8 @@ appcmd = os.path.splitext(os.path.basename(__file__))[0]
 
 logging.basicConfig(
     level=logging.NOTSET,
-    format=f'[{appname}] - %(levelname)s [%(asctime)s] %(message)s',
+    # format=f'[{appname}] - %(levelname)s [%(asctime)s] %(message)s',
+    format=f'[{appname}] %(asctime)s  %(message)s',
     datefmt='%H:%M:%S',
 )
 logger = logging.getLogger(__name__)
@@ -65,26 +66,23 @@ def help():
         Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
     4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
 
+    Commands:
+    (call either command with --debug to get more information)
     init        Initialized the folders
     help        Show this screen
     build       Build and package cython files
-      --debug             Debugging mode (default False)
       --no-annotation     Disables generating the annotations html (default True)
       --no-numpy-required Prevents numpy being included in setup.py include_dirs (default True)
       --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
-    """)
+    clean
+    """
 
-def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:bool=False, keep_c_files:bool=False, targetfilenames:[str]=None):
+    )
+
+def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenames:[str]=None):
     """ pyx -> c -> so
     annotation: whether or not to generate the annotation html
     """
-
-    # SET LOGGER
-    if (debugmode):
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-
 
     # Parse arguments
     if (targetfilenames == None):
@@ -95,6 +93,7 @@ def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:boo
     target_pyx_filepaths = [y for x in os.walk(path_extensions_dir) for y in glob(os.path.join(x[0], '*.pyx'))]
     target_pyx_filenames = [os.path.basename(p) for p in target_pyx_filepaths]
     logger.debug(f"Filenames in folder: {target_pyx_filenames}")
+
 
     # If user passes targetfilenames
     if (len(targetfilenames) > 0):
@@ -111,12 +110,16 @@ def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:boo
 
         # Filter our target files with the provided file names
         target_pyx_filepaths = [p for p in target_pyx_filepaths for f in targetfilenames if f"{f}.pyx" in p]
+        target_pyx_filenames = [os.path.basename(p) for p in target_pyx_filepaths]
         logger.debug(msg=f"Found all target filepaths: {target_pyx_filepaths}")
+
+
 
     # NO pyx files found
     if (len(target_pyx_filepaths) == 0):
         logging.error('No pyx files found to compile')
         sys.exit(1)
+
 
 
     # START SETUP
@@ -144,7 +147,6 @@ def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:boo
         ext_modules.append(obj)
     logger.debug(msg=f"Included {len(ext_modules)} modules")
 
-
     # Extra include folders. Mainly for numpy.
     logger.debug(msg=f"Including directories")
     include_dirs = []
@@ -154,7 +156,10 @@ def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:boo
             include_dirs += [numpy.get_include()]
         except Exception as e:
             logger.debug(msg=f"{type(e).__name__}: {e}")
-            logging.error('Exiting: numpy is required but not found. Please pip install numpy')
+            logging.error('Exiting: numpy is required but not found. '
+                          '\nFix this issue by either:'
+                          '\n - pip install numpy '
+                          '\n - indicate that numpy is not required using the --no-numpy-required flag (check out cythonbuilder help for more info)')
             sys.exit(1)
     logger.debug(msg=f"Included {len(include_dirs)} dirs: {include_dirs}")
 
@@ -166,42 +171,49 @@ def build(include_annotation:bool=True, numpy_required:bool=False, debugmode:boo
         ext_modules = cythonize(ext_modules),
         # buid_dir=path_build_dir
     )
-    logger.debug(msg=f"Built {len(target_pyx_filenames)} modules: {[os.path.splitext(fn)[0] for fn in target_pyx_filenames]}")
+
+    logger.debug(msg=f"Built and packaged {len(ext_modules)} module(s): {[os.path.splitext(fn)[0] for fn in target_pyx_filenames]}")
+    logger.info(msg=f"Built and packaged {len(ext_modules)} module(s): {', '.join([os.path.splitext(fn)[0] for fn in target_pyx_filenames])}")
 
 
-
+def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
     # CLEANUP
     logger.debug(msg=f"Starting cleanup")
 
+    all_c_files = [y for x in os.walk(path_pyx_dir) for y in glob(os.path.join(x[0], '*.c'))]
+    all_html_files = [y for x in os.walk(path_pyx_dir) for y in glob(os.path.join(x[0], '*.html'))]
+    all_built_files = [p for p in os.listdir(path_root_dir) if ('.pyd' in p or '.os' in p)]
+
+
     # 1. delete intermediate C files.
     if (not keep_c_files):
-        logger.debug(msg=f"Removing C files")
-        for pyxpath in target_pyx_filepaths:
-            cpath = pyxpath.replace(".pyx", ".c")
+        for cpath in all_c_files:
             if os.path.exists(cpath):
                 os.remove(cpath)
             else:
                 logger.warning(msg=f"Moving C file; {cpath} doesn't exist")
-        logger.debug("Removed C files")
+        logger.debug(msg=f"Removed {len(all_c_files)} C files from {dirname_pyxfiles} folder")
 
     # 2. Move all annotations
-    for pyxpath in target_pyx_filepaths:
-        htmlpath = pyxpath.replace(".pyx", ".html")
+    for htmlpath in all_html_files:
         shutil.move(htmlpath, os.path.join(path_annotations_dir, os.path.basename(htmlpath)))
-    logger.debug(msg=f"Moved annotation files to {dirname_extensions}/{dirname_pyxfiles}")
+    logger.debug(msg=f"Moved {len(all_html_files)} annotation files to {dirname_extensions}/{dirname_pyxfiles}")
 
-    # 3. Move all pyd files to the extensions dir
-    for file in [f for f in os.listdir(path_root_dir) if '.pyd' in f]:
+    # 3. Move all built (.pyd / .so) files from the root o in the project to the extensions dir
+    for bfile in all_built_files:
         shutil.move(
-            src=os.path.join(path_root_dir, file),
-            dst=os.path.join(path_extensions_dir, file)
+            src=os.path.join(path_root_dir, bfile),
+            dst=os.path.join(path_extensions_dir, bfile)
         )
-    logger.debug(msg=f"Moved pyd file to {dirname_extensions}/")
+    logger.debug(msg=f"Moved {len(all_built_files)} built files (.pyd / .so) to {dirname_extensions}/")
 
     # 4. Remove setup.py build dir that contains compiled c
-    shutil.rmtree(path_setuppy_build_dir)
-    logger.debug(msg=f"Removed build dir")
-    logger.info(msg=f"Built {len(target_pyx_filenames)} modules: {', '.join([os.path.splitext(fn)[0] for fn in target_pyx_filenames])}")
+    try:
+        shutil.rmtree(path_setuppy_build_dir)
+    except Exception as e:
+        logger.debug("Cleanup: build folder cannot be located")
+    logger.debug(msg=f"Clean up process completed")
+    logger.info(msg=f"Clean-up process completed")
 
 
 def test(_args):
@@ -212,39 +224,55 @@ def test(_args):
 def main():
     _args = sys.argv[1:]
 
+
+    # No commands
     if (len(_args) == 0):
         help()
         sys.exit(1)
 
+    # Set debugger
     if ('--debug' in _args):
         logger.setLevel(logging.DEBUG)
-    logger.setLevel(logging.DEBUG)
-    logger.debug(_args)
+    else:
+        logger.setLevel(logging.INFO)
 
-    if (_args[0] == 'init'):
+
+    # Parse commands
+    command = _args.pop(0)
+    if (command == 'init'):
         init()
-    elif (_args[0] in ('--help', 'h', 'help')):
+    elif (command in  ['--help', 'h', 'help']):
         help()
-    elif (_args[0] in ('build')):
+    elif (command == 'build'):
         # Parse args
         include_annotation = False if ('--no-annotation' in _args) else True    # default True
-        do_debug = True if ('--debug' in _args) else False                      # default False
         numpy_required = False if ('--no-numpy-required' in _args) else True    # default True
         keep_c_files = True if ('--keep-c-files' in _args) else False           # default False
+        keep_annotations = False if ('--no-annotations' in _args) else True         # default False
 
         # Clean up _args
-        targetfilenames = [a for a in _args if a not in ['build', '--no-annotation', '--debug', '--no-numpy-required', '--keep-c-files']]
+        targetfilenames = [a for a in _args if a[:2] != '--']
 
         # Call build function
-        build(
-            include_annotation=include_annotation,
-            debugmode=do_debug,
-            numpy_required=numpy_required,
-            keep_c_files=keep_c_files,
-            targetfilenames=targetfilenames
-        )
-    elif (_args[0]) in ('test'):
+        try:
+            build(
+                include_annotation=include_annotation,
+                numpy_required=numpy_required,
+                targetfilenames=targetfilenames
+            )
+        except Exception as e:
+            logger.error(f"An error occurred executing the build command: \n{e}")
+        finally:
+            cleanup(
+                keep_c_files=keep_c_files,
+                keep_annotation_files=keep_annotations
+            )
+    elif (command == 'clean'):
+        keep_c_files = True if ('--keep-c-files' in _args) else False           # default False
+        cleanup(keep_c_files=keep_c_files)
+    elif (command == 'test'):
         test(_args)
+
     else:
         help()
 
