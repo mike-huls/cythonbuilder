@@ -57,30 +57,27 @@ def init():
 
     logging.info("Initialized")
 
-print(f"""{appname}
-    Automatically builds and packages your Cython code 
-    1. Initialize {appname} with `{appcmd} init` 
-    2. Place all .pyx Cython files in {dirname_extensions}/{dirname_pyxfiles}
-    3. Call `{appcmd} build` to build and package all .pyx files in {dirname_extensions}/{dirname_pyxfiles} 
-        Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
-    4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
-
-    Commands:
-    (call either command with --debug to get more information)
-    init        Initialized the folders
-    help        Show this screen
-    build       Build and package cython files
-      --no-numpy-required Prevents numpy being included in setup.py include_dirs (default True)
-      --no-annotation     Disables generating the annotations html (default True)
-      --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
-    clean       Cleans up project. Puts all built files in {dirname_extensions}, removes 
-      --no-annotation     Disables generating the annotations html (default True)
-      --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
-    """
-
-      )
 def help():
-    pass
+    print(f"""{appname}
+        Automatically builds and packages your Cython code 
+        1. Initialize {appname} with `{appcmd} init` 
+        2. Place all .pyx Cython files in {dirname_extensions}/{dirname_pyxfiles}
+        3. Call `{appcmd} build` to build and package all .pyx files in {dirname_extensions}/{dirname_pyxfiles} 
+            Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
+        4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
+    
+        Commands:
+        (call either command with --debug to get more information)
+        init        Initialized the folders
+        help        Show this screen
+        build       Build and package cython files
+          --no-numpy-required Prevents numpy being included in setup.py include_dirs (default True)
+          --no-annotation     Disables generating the annotations html (default True)
+          --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
+        clean       Cleans up project. Puts all built files in {dirname_extensions}, removes 
+          --no-annotation     Disables generating the annotations html (default True)
+          --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
+        """)
 
 def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenames:[str]=None):
     """ pyx -> c -> so
@@ -178,9 +175,10 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
     logger.debug(msg=f"Built and packaged {len(ext_modules)} module(s): {[os.path.splitext(fn)[0] for fn in target_pyx_filenames]}")
     logger.info(msg=f"Built and packaged {len(ext_modules)} module(s): {', '.join([os.path.splitext(fn)[0] for fn in target_pyx_filenames])}")
 
-
 def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
-    # CLEANUP
+    """
+    Removes c
+    """
     logger.debug(msg=f"Starting cleanup")
 
     all_c_files = [y for x in os.walk(path_pyx_dir) for y in glob(os.path.join(x[0], '*.c'))]
@@ -198,9 +196,14 @@ def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
         logger.debug(msg=f"Removed {len(all_c_files)} C files from {dirname_pyxfiles} folder")
 
     # 2. Move all annotations
-    for htmlpath in all_html_files:
-        shutil.move(htmlpath, os.path.join(path_annotations_dir, os.path.basename(htmlpath)))
-    logger.debug(msg=f"Moved {len(all_html_files)} annotation files to {dirname_extensions}/{dirname_pyxfiles}")
+    if (keep_annotation_files):
+        for htmlpath in all_html_files:
+            shutil.move(htmlpath, os.path.join(path_annotations_dir, os.path.basename(htmlpath)))
+        logger.debug(msg=f"Moved {len(all_html_files)} annotation files to {dirname_extensions}/{dirname_pyxfiles}")
+    else:
+        for htmlpath in all_html_files:
+            if (os.path.exists(htmlpath)):
+                os.remove(htmlpath)
 
     # 3. Move all built (.pyd / .so) files from the root o in the project to the extensions dir
     for bfile in all_built_files:
@@ -218,7 +221,6 @@ def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
     logger.debug(msg=f"Clean up process completed")
     logger.info(msg=f"Clean-up process completed")
 
-
 def test(_args):
     logger.setLevel(logging.DEBUG)
     logger.debug(msg=f"args: {_args}")
@@ -226,7 +228,6 @@ def test(_args):
 
 def main():
     _args = sys.argv[1:]
-
 
     # No commands
     if (len(_args) == 0):

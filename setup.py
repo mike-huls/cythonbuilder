@@ -35,4 +35,4 @@ setuptools.setup(
 )
 
 # python setup.py sdist
-# python -m twine upload dist/*
+# python -m twine upload dist/cythonbuilder-0.0.6.tar.gz
