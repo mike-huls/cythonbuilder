@@ -1,6 +1,5 @@
 /venv
 /ext
-/test
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -188,7 +188,7 @@ def build(include_annotation:bool=True, numpy_required:bool=True, targetfilename
     setup(
         cmdclass={'build_ext': build_ext},
         include_dirs=include_dirs,
-        ext_modules = cythonize(ext_modules),
+        ext_modules = cythonize(ext_modules, quiet=True),
         # buid_dir=path_build_dir
     )
 
