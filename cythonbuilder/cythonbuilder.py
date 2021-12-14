@@ -1,70 +1,86 @@
-from __future__ import print_function, division
+import os
+from dataclasses import dataclass
+# from __future__ import print_function, division
 import sys
 import os
 import logging
 import shutil
-import typing
-from os.path import splitext
-from pathlib import Path
 from glob import glob
 
 
-dirname_extensions = "ext"
-dirname_pyxfiles = "pyxfiles"
-dirname_annotations = "annotations"
+@dataclass
+class AppConfig:
+    appname:str = "CythonBuilder"
+    appcmd:str = os.path.splitext(os.path.basename(__file__))[0]
 
-path_root_dir = os.path.realpath(os.curdir)
-path_extensions_dir = os.path.join(path_root_dir, dirname_extensions)
-path_pyx_dir = os.path.join(path_extensions_dir, dirname_pyxfiles)
-path_annotations_dir = os.path.join(path_extensions_dir, dirname_annotations)
-path_setuppy_build_dir = os.path.join(path_root_dir, 'build')
+@dataclass
+class LoggingConfig:
+    logginName:str = 'cybuilderlogger'
 
-appname = "CythonBuilder"
-appcmd = os.path.splitext(os.path.basename(__file__))[0]
+@dataclass
+class DirectoryConfig:
+    dirname_extensions:str = "ext"
+    dirname_pyxfiles:str = "pyxfiles"
+    dirname_annotations:str = "annotations"
+
+    path_root_dir:str = os.path.realpath(os.curdir)
+    path_extensions_dir:str = os.path.join(path_root_dir, dirname_extensions)
+    path_pyx_dir:str = os.path.join(path_extensions_dir, dirname_pyxfiles)
+    path_annotations_dir:str = os.path.join(path_extensions_dir, dirname_annotations)
+    path_setuppy_build_dir:str = os.path.join(path_root_dir, 'build')
+
 
 
 logging.basicConfig(
-    level=logging.NOTSET,
+    level=logging.CRITICAL,
     # format=f'[{appname}] - %(levelname)s [%(asctime)s] %(message)s',
-    format=f'[{appname}] %(asctime)s  %(message)s',
+    format=f'[{AppConfig.appname}] %(asctime)s  %(message)s',
     datefmt='%H:%M:%S',
 )
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.CRITICAL)
+logger = logging.getLogger(LoggingConfig.logginName)
+logger.setLevel(logging.INFO)
 
 
 def init():
     """ Creates a folder-structure for all pyx-files and resulting so-files like
     - root
         - ext (holds all so-files)
-            - cythonfiles
+            - pyxfiles
+            - annotations
    """
 
 
-    required_folders = [path_root_dir, path_extensions_dir, path_pyx_dir, path_annotations_dir]
+
+    required_folders = [
+        DirectoryConfig.path_root_dir,
+        DirectoryConfig.path_extensions_dir,
+        DirectoryConfig.path_pyx_dir,
+        DirectoryConfig.path_annotations_dir
+    ]
 
 
     # Ensure folder structure exists
     for folder in required_folders:
         if (not os.path.isdir(folder)):
             os.mkdir(folder)
+            logger.debug(f"created {folder}")
 
     # Warn if folder contain files
-    for _dir in [path_extensions_dir, path_pyx_dir]:
+    for _dir in [DirectoryConfig.path_extensions_dir, DirectoryConfig.path_pyx_dir]:
         file_list = next(os.walk(_dir), (None, None, []))[2]  # [] if no file
         if (len(file_list) > 0):
-            logging.warning(f"{_dir} folder is not empty")
+            logger.debug(f"{_dir} folder is not empty")
 
-    logging.info("Initialized")
+    logger.info("Initialized")
 
 def help():
-    print(f"""{appname}
+    print(f"""{AppConfig.appname}
         Automatically builds and packages your Cython code 
-        1. Initialize {appname} with `{appcmd} init` 
-        2. Place all .pyx Cython files in {dirname_extensions}/{dirname_pyxfiles}
-        3. Call `{appcmd} build` to build and package all .pyx files in {dirname_extensions}/{dirname_pyxfiles} 
-            Alternatively call `{appcmd} build filename1, filename2` (without .pyx extension) to build specific files
-        4. Import your compile package from {dirname_extensions}/ like `from {dirname_extensions} import filename`
+        1. Initialize {AppConfig.appname} with `{AppConfig.appcmd} init` 
+        2. Place all .pyx Cython files in {DirectoryConfig.dirname_extensions}/{DirectoryConfig.dirname_pyxfiles}
+        3. Call `{AppConfig.appcmd} build` to build and package all .pyx files in {DirectoryConfig.dirname_extensions}/{DirectoryConfig.dirname_pyxfiles} 
+            Alternatively call `{AppConfig.appcmd} build filename1, filename2` (without .pyx extension) to build specific files
+        4. Import your compile package from {DirectoryConfig.dirname_extensions}/ like `from {DirectoryConfig.dirname_extensions} import filename`
     
         Commands:
         (call either command with --debug to get more information)
@@ -74,15 +90,19 @@ def help():
           --no-numpy-required Prevents numpy being included in setup.py include_dirs (default True)
           --no-annotation     Disables generating the annotations html (default True)
           --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
-        clean       Cleans up project. Puts all built files in {dirname_extensions}, removes 
+        clean       Cleans up project. Puts all built files in {DirectoryConfig.dirname_extensions}, removes 
           --no-annotation     Disables generating the annotations html (default True)
           --keep-c-files      Prevents removal of intermediate C files that Cython generates (default True)
         """)
 
-def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenames:[str]=None):
+def build(include_annotation:bool=True, numpy_required:bool=True, targetfilenames:[str]=None, debugmode:bool=False):
     """ pyx -> c -> so
     annotation: whether or not to generate the annotation html
     """
+
+
+    if (debugmode):
+        logger.setLevel(logging.DEBUG)
 
     # Parse arguments
     if (targetfilenames == None):
@@ -90,7 +110,7 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
 
 
     # Find paths for all target files; optionally filter on user input
-    target_pyx_filepaths = [y for x in os.walk(path_extensions_dir) for y in glob(os.path.join(x[0], '*.pyx'))]
+    target_pyx_filepaths = [y for x in os.walk(DirectoryConfig.path_extensions_dir) for y in glob(os.path.join(x[0], '*.pyx'))]
     target_pyx_filenames = [os.path.basename(p) for p in target_pyx_filepaths]
     logger.debug(f"Filenames in folder: {target_pyx_filenames}")
 
@@ -114,10 +134,9 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
         logger.debug(msg=f"Found all target filepaths: {target_pyx_filepaths}")
 
 
-
     # NO pyx files found
     if (len(target_pyx_filepaths) == 0):
-        logging.error('No pyx files found to compile')
+        logger.error('No pyx files found to compile')
         sys.exit(1)
 
 
@@ -129,6 +148,7 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
     from Cython.Distutils import build_ext
     from Cython.Build import cythonize
     import Cython.Compiler.Options
+
 
     # Set compiler options
     Cython.Compiler.Options.annotate = include_annotation
@@ -156,7 +176,7 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
             include_dirs += [numpy.get_include()]
         except Exception as e:
             logger.debug(msg=f"{type(e).__name__}: {e}")
-            logging.error('Exiting: numpy is required but not found. '
+            logger.error('Exiting: numpy is required but not found. '
                           '\nFix this issue by either:'
                           '\n - pip install numpy '
                           '\n - indicate that numpy is not required using the --no-numpy-required flag (check out cythonbuilder help for more info)')
@@ -164,7 +184,7 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
     logger.debug(msg=f"Included {len(include_dirs)} dirs: {include_dirs}")
 
 
-    logging.debug(msg=f"Starting setup")
+    logger.debug(msg=f"Starting setup")
     setup(
         cmdclass={'build_ext': build_ext},
         include_dirs=include_dirs,
@@ -175,15 +195,15 @@ def build(include_annotation:bool=True, numpy_required:bool=False, targetfilenam
     logger.debug(msg=f"Built and packaged {len(ext_modules)} module(s): {[os.path.splitext(fn)[0] for fn in target_pyx_filenames]}")
     logger.info(msg=f"Built and packaged {len(ext_modules)} module(s): {', '.join([os.path.splitext(fn)[0] for fn in target_pyx_filenames])}")
 
-def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
+def clean(keep_c_files:bool=False, keep_annotation_files:bool=True):
     """
     Removes c
     """
     logger.debug(msg=f"Starting cleanup")
 
-    all_c_files = [y for x in os.walk(path_pyx_dir) for y in glob(os.path.join(x[0], '*.c'))]
-    all_html_files = [y for x in os.walk(path_pyx_dir) for y in glob(os.path.join(x[0], '*.html'))]
-    all_built_files = [p for p in os.listdir(path_root_dir) if ('.pyd' in p or '.os' in p)]
+    all_c_files = [y for x in os.walk(DirectoryConfig.path_pyx_dir) for y in glob(os.path.join(x[0], '*.c'))]
+    all_html_files = [y for x in os.walk(DirectoryConfig.path_pyx_dir) for y in glob(os.path.join(x[0], '*.html'))]
+    all_built_files = [p for p in os.listdir(DirectoryConfig.path_root_dir) if ('.pyd' in p or '.os' in p)]
 
 
     # 1. delete intermediate C files.
@@ -193,13 +213,13 @@ def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
                 os.remove(cpath)
             else:
                 logger.warning(msg=f"Moving C file; {cpath} doesn't exist")
-        logger.debug(msg=f"Removed {len(all_c_files)} C files from {dirname_pyxfiles} folder")
+        logger.debug(msg=f"Removed {len(all_c_files)} C files from {DirectoryConfig.dirname_pyxfiles} folder")
 
     # 2. Move all annotations
     if (keep_annotation_files):
         for htmlpath in all_html_files:
-            shutil.move(htmlpath, os.path.join(path_annotations_dir, os.path.basename(htmlpath)))
-        logger.debug(msg=f"Moved {len(all_html_files)} annotation files to {dirname_extensions}/{dirname_pyxfiles}")
+            shutil.move(htmlpath, os.path.join(DirectoryConfig.path_annotations_dir, os.path.basename(htmlpath)))
+        logger.debug(msg=f"Moved {len(all_html_files)} annotation files to {DirectoryConfig.dirname_extensions}/{DirectoryConfig.dirname_pyxfiles}")
     else:
         for htmlpath in all_html_files:
             if (os.path.exists(htmlpath)):
@@ -208,14 +228,14 @@ def cleanup(keep_c_files:bool=False, keep_annotation_files:bool=True):
     # 3. Move all built (.pyd / .so) files from the root o in the project to the extensions dir
     for bfile in all_built_files:
         shutil.move(
-            src=os.path.join(path_root_dir, bfile),
-            dst=os.path.join(path_extensions_dir, bfile)
+            src=os.path.join(DirectoryConfig.path_root_dir, bfile),
+            dst=os.path.join(DirectoryConfig.path_extensions_dir, bfile)
         )
-    logger.debug(msg=f"Moved {len(all_built_files)} built files (.pyd / .so) to {dirname_extensions}/")
+    logger.debug(msg=f"Moved {len(all_built_files)} built files (.pyd / .so) to {DirectoryConfig.dirname_extensions}/")
 
     # 4. Remove setup.py build dir that contains compiled c
     try:
-        shutil.rmtree(path_setuppy_build_dir)
+        shutil.rmtree(DirectoryConfig.path_setuppy_build_dir)
     except Exception as e:
         logger.debug("Cleanup: build folder cannot be located")
     logger.debug(msg=f"Clean up process completed")
@@ -267,17 +287,16 @@ def main():
         except Exception as e:
             logger.error(f"An error occurred executing the build command: \n{e}")
         finally:
-            cleanup(
+            clean(
                 keep_c_files=keep_c_files,
                 keep_annotation_files=keep_annotations
             )
     elif (command == 'clean'):
         keep_c_files = True if ('--keep-c-files' in _args) else False           # default False
         keep_annotations = False if ('--no-annotations' in _args) else True         # default False
-        cleanup(keep_c_files=keep_c_files, keep_annotation_files=keep_annotations)
+        clean(keep_c_files=keep_c_files, keep_annotation_files=keep_annotations)
     elif (command == 'test'):
         test(_args)
-
     else:
         help()
 
