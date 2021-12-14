@@ -1,5 +1,6 @@
 cimport numpy as np
 import numpy as np
+
 cpdef double sum_array(np.ndarray the_column):
     cdef int i;
     cdef double the_sum;

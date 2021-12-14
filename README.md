@@ -35,10 +35,12 @@ All packages en up in `/ext` so you can simply `from ext import yourfilename`.
 
 
 ### Python demonstration
+
 ```python
 import cythonbuilder as cybuilder
+
 cybuilder.init()
-cybuilder.build(targetfilenames=["my_cy_package"])
+cybuilder.just_build(targetfilenames=["my_cy_package"])
 
 from ext import my_cy_package
 
