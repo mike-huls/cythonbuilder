@@ -4,7 +4,7 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version_number = "0.0.8"
+version_number = "0.0.9"
 
 setuptools.setup(
     name='cythonbuilder',  # should match the package folder
@@ -18,13 +18,23 @@ setuptools.setup(
     author_email='mikehuls42@gmail.com',
     url='https://github.com/mike-huls/cythonbuilder',
     project_urls={  # Optional
-        "Bug Tracker": "https://github.com/mike-huls/cythonbuilder/issues"
+        "Source": "https://github.com/mike-huls/cythonbuilder/",
+        "Bug Tracker": "https://github.com/mike-huls/cythonbuilder/issues",
+        "Documentation": "https://github.com/mike-huls/cythonbuilder/blob/main/README.md/",
+},
+    entry_points={
+        'console_scripts': [
+            'cythonbuilder=cythonbuilder.cythonbuilder:main',
+            'cybuilder=cythonbuilder.cythonbuilder:main'
+        ],
     },
     install_requires=['Cython'],  # list all packages that your package uses
+    python_requires='>=3',
     keywords=["pypi", "Cython", "setup", "packaging", "compilation"],  # descriptive meta-data
     classifiers=[
         # https://pypi.org/classifiers
         'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'Topic :: Software Development :: Compilers',

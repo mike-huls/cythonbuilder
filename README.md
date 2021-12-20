@@ -7,9 +7,15 @@ CythonBuilder; automated compiling and packaging of Cython code
 [![PythonVersion](https://img.shields.io/pypi/pyversions/cythonbuilder)]()
 [![Version](https://img.shields.io/pypi/v/cythonbuilder)](https://pypi.org/project/cythonbuilder/)
 [![PyPiStatus](https://img.shields.io/pypi/status/cythonbuilder)](https://pypi.org/project/cythonbuilder/)
+![PyPI - License](https://img.shields.io/pypi/l/cythonbuilder)  
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/pypi/cythonbuilder)
 [![Downloads Badge](https://img.shields.io/pypi/dm/cythonbuilder)](https://pypi.org/project/cythonbuilder/)
 
+![Twitter Follow](https://img.shields.io/twitter/follow/mike_huls?style=social)
+![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder)
+
 ## Installation
+
 ```commandline
 pip install cythonbuilder
 ```
