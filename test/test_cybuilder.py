@@ -4,7 +4,6 @@ import shutil
 import unittest
 
 import cythonbuilder
-import cythonbuilder as cybuilder
 from cythonbuilder.config import AppConfig, LoggingConfig, DirConfig
 from dataclasses import dataclass
 
