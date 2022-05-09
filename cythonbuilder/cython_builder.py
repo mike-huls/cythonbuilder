@@ -54,8 +54,6 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
     # 1. Get target files
     if (target_files == None):
         target_files = cy_list()
-    else:
-        target_files = cy_list(target_files=target_files)
 
 
     # We want to build in place
@@ -103,13 +101,11 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
     )
 def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
     """ Clean up all files """
-    logger.debug(msg=f"[{cy_clean.__name__}] - start cy_clean")
+    logger.debug(msg=f"[{cy_clean.__name__}] - start cy_clean with {target_files}")
 
     # 1. Get target files
     if (target_files == None):
         target_files = cy_list()
-    else:
-        target_files = cy_list(target_files=target_files)
 
     # Make sure cybuilder is init because we need to move files to /ext/annotations
     cy_init()
@@ -157,13 +153,11 @@ def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
 def cy_interface(target_files:[str] = None):
     """ Creates .pyi interface files from the provided target_files """
 
-    logger.debug(msg=f"[{cy_interface.__name__}] - generating interface files")
 
     # 1. Get target files
     if (target_files == None):
         target_files = cy_list()
-    else:
-        target_files = cy_list(target_files=target_files)
+    logger.debug(msg=f"[{cy_interface.__name__}] - generating interface files for {len(target_files)} found pyx files")
 
 
     for pyx_fullpath in target_files:

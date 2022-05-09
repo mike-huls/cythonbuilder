@@ -107,14 +107,18 @@ print(cybuilder.cy_list(target_files=['some_name.pyx']))    # with a filter
 import cythonbuilder as cybuilder
 
 cybuilder.cy_build()
-cybuilder.cy_build(target_files=['some_name.pyx'], include_numpy=False, create_annotations=False)  # with a filter
+
+found_files = cybuilder.cy_build(target_files=['some_name'])
+cybuilder.cy_build(target_files=found_files, include_numpy=False, create_annotations=False)
 ```
 
 3. Clean
 ```python
-import cythonbuilder as cybuilder 
+import cythonbuilder as cybuilder
 
 cybuilder.cy_clean()
+
+found_files = cybuilder.cy_build(target_files=['some_name'])
 cybuilder.cy_clean(target_files=['some_name'])
 ```
 

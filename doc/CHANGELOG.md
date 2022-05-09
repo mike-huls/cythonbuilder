@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file.
  
 
 ## Upcoming features
-- Generate .pyi files from the .pyx files
 <hr>
 
 
@@ -21,6 +20,8 @@ All notable changes to this project will be documented in this file.
 - `cybuilder list` 
 - `cybuilder build`
 - `cybuilder clean` to clean up like after a build
+- `pyigenerator.py` -> Generate .pyi files from the .pyx files
+- Added pyi generator implementation to ui and help function
 ### Changed
 - README.md - new workflow
 <hr>
