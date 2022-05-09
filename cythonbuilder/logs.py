@@ -180,9 +180,6 @@ def set_only_active_loggers(active_logger_names:[str], level:int, other_loggers_
         else:
             set_level(loggername=loggername, level=other_loggers_level)
 
-def set_level(logger:logging.Logger, level:int):
-    """ Sets the level of a logger """
-    logger.setLevel(level=level)
 def set_format(logger:logging.Logger, format:str):
     """ Sets the level of a logger """
     handler:logging.Handler
@@ -196,3 +193,9 @@ def set_format(logger:logging.Logger, format:str):
             field_styles=formatter.field_styles
         )
         handler.setFormatter(fmt=coloredFormatter)
+
+def set_logger_debug_mode(logger:logging.Logger):
+    """ Set the debug mode of the logger """
+
+    set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
+    logger.setLevel(logging.DEBUG)

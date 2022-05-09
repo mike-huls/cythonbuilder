@@ -10,25 +10,25 @@ class FilesAndFolders:
     @staticmethod
     def create_folder(folderpath: str) -> None:
         if (os.path.exists(folderpath)):
-            logger.debug(msg=f"[{__name__}`] - provided folder already exists: '{folderpath}', skipping..")
+            logger.debug(msg=f"{FilesAndFolders.create_folder.__name__}] - provided folder already exists: '{folderpath}', skipping..")
             return
         os.mkdir(path=folderpath)
-        logger.debug(msg=f"[{__name__}] - created folder")
+        logger.debug(msg=f"{FilesAndFolders.create_folder.__name__}] - created folder")
 
     @staticmethod
     def remove_folder(folderpath: str) -> None:
         if (not os.path.isdir(folderpath)):
-            logger.debug(msg=f"[{__name__}] - provided folder cannot be removed: it does not exist: '{folderpath}', skipping..")
+            logger.debug(msg=f"{FilesAndFolders.remove_folder.__name__}] - provided folder cannot be removed: it does not exist: '{folderpath}', skipping..")
             return
         shutil.rmtree(folderpath)
-        logger.debug(msg=f"[{__name__}] - Removed folder {folderpath}")
+        logger.debug(msg=f"{FilesAndFolders.remove_folder.__name__}] - Removed folder {folderpath}")
 
     @staticmethod
     def create_empty_file(filepath: str, overwrite: bool = False) -> None:
         """ Creates an empty file if not exists """
         if (not overwrite):
             if (os.path.isfile(filepath)):
-                logger.debug(msg=f"[{__name__}] - provided filepath already exists '{filepath}', skipping..")
+                logger.debug(msg=f"{FilesAndFolders.create_empty_file.__name__}] - provided filepath already exists '{filepath}', skipping..")
                 return
         with open(filepath, 'w') as file:
             file.write("")
@@ -39,7 +39,7 @@ class FilesAndFolders:
 
         # Validate
         if (not os.path.isfile(targetfilepath)):
-            raise ValueError(f"[{__name__}] - provided filepath invalid; does not exist: {targetfilepath}")
+            raise ValueError(f"{FilesAndFolders.replace_in_file.__name__}] - provided filepath invalid; does not exist: {targetfilepath}")
 
         # Open target, replace string and write again
         with open(targetfilepath, 'r') as file:
@@ -54,14 +54,14 @@ class FilesAndFolders:
 
         source = os.path.join(PACKAGE_ROOT, 'files', targetfilename)
         if (not os.path.isfile(source)):
-            raise ValueError(f"[{__name__}] - provided filename invalid; source file does not exist: {source}")
+            raise ValueError(f"{FilesAndFolders.copy_file.__name__}] - provided filename invalid; source file does not exist: {source}")
         if (not os.path.isdir(os.path.dirname(destinationpath))):
-            raise ValueError(f"[{__name__}] - provided destination invalid; target folder does not exist: {os.path.dirname(destinationpath)}")
+            raise ValueError(f"{FilesAndFolders.copy_file.__name__}] - provided destination invalid; target folder does not exist: {os.path.dirname(destinationpath)}")
 
         # Overwrite?
         if (not overwrite):
             if (os.path.isfile(destinationpath)):
-                logger.debug(msg=f"[{__name__}] File {targetfilename} already exists. Skipping..")
+                logger.debug(msg=f"[{FilesAndFolders.copy_file.__name__}] - File {targetfilename} already exists. Skipping..")
                 return
 
         # Copy
@@ -74,7 +74,7 @@ class FilesAndFolders:
     def remove_file(targetfilename:str) -> None:
         """ Remove specified file """
         if (not os.path.isfile(targetfilename)):
-            raise ValueError(f"[{__name__}] - provided filename invalid; target file does not exist: {targetfilename}")
+            raise ValueError(f"{FilesAndFolders.remove_file.__name__}] - provided filename invalid; target file does not exist: {targetfilename}")
         os.remove(targetfilename)
 
     @staticmethod
@@ -82,12 +82,12 @@ class FilesAndFolders:
         """ download a file from a url to the given file path """
 
         if (not os.path.isfile(srcfilename)):
-            raise ValueError(f"[{__name__}] - provided source filename invalid; source file does not exist: {srcfilename}")
+            raise ValueError(f"{FilesAndFolders.move_file.__name__}] - provided source filename invalid; source file does not exist: {srcfilename}")
         if (not os.path.isdir(os.path.dirname(dstfilename))):
-            raise ValueError(f"[{__name__}] - provided destination folder invalid; does not exist: {os.path.isdir(os.path.dirname(dstfilename))}")
+            raise ValueError(f"{FilesAndFolders.move_file.__name__}] - provided destination folder invalid; does not exist: {os.path.isdir(os.path.dirname(dstfilename))}")
 
         if (os.path.isfile(dstfilename) and not overwrite):
-            raise ValueError(f"[{__name__}] - cannot move file; target file already exists: {os.path.isdir(os.path.dirname(dstfilename))}")
+            raise ValueError(f"{FilesAndFolders.move_file.__name__}] - cannot move file; target file already exists: {os.path.isdir(os.path.dirname(dstfilename))}")
 
         # Copy
         logger.debug(f"moving {srcfilename} to {dstfilename}")

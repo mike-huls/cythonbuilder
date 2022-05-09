@@ -11,14 +11,13 @@ from cythonbuilder import appsettings
 project_dir = os.getcwd()
 
 
-
 def cy_init():
     """ Creates projdir.ext, projdir.ext.annotations """
 
     # create root.ext, root.ext.annotations
     FilesAndFolders.create_folder(folderpath=os.path.join(project_dir, appsettings.cython_extensions_dirname))
     FilesAndFolders.create_folder(folderpath=os.path.join(project_dir, appsettings.cython_anno_dirname))
-    logger.debug(msg=f"Initialized cybuider at {project_dir}")
+    logger.debug(msg=f"[{cy_init.__name__}] - Initialized cybuilder at {project_dir}")
 
 
 
@@ -52,8 +51,12 @@ def cy_list(target_files:[str]=None) -> [str]:
 def cy_build(target_files:[str] = None, create_annotations:bool=True, include_numpy:bool=False):
     """ Builds all pyx files in the /ext folder """
 
+    # 1. Get target files
     if (target_files == None):
         target_files = cy_list()
+    else:
+        target_files = cy_list(target_files=target_files)
+
 
     # We want to build in place
     sys.argv = [sys.argv[0], 'build_ext', '--inplace']
@@ -70,7 +73,7 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
     ext_modules = []
     for n in target_files:
         if (not os.path.isfile(n)):
-            logger.info(msg=f"File {n} not found; skipping..")
+            logger.info(msg=f"File '{n}' not found; skipping..")
             continue
         logger.debug(msg=f"C {n}")
         module_name, extension = os.path.splitext(os.path.basename(n))
@@ -100,11 +103,16 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
     )
 def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
     """ Clean up all files """
-    logger.debug(msg="cleanup")
+    logger.debug(msg=f"[{cy_clean.__name__}] - start cy_clean")
 
-    cy_init()
+    # 1. Get target files
     if (target_files == None):
         target_files = cy_list()
+    else:
+        target_files = cy_list(target_files=target_files)
+
+    # Make sure cybuilder is init because we need to move files to /ext/annotations
+    cy_init()
 
     annotations_dir = os.path.join(project_dir, appsettings.cython_anno_dirname)
 
@@ -118,15 +126,20 @@ def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
             logger.info(msg=f"File {built_file} not found; skipping..")
             continue
 
-        _filename =os.path.splitext(os.path.basename(built_file))[0]    # no ext
+        _filename = os.path.splitext(os.path.basename(built_file))[0]    # no ext
 
         # Clean up C files
         if (not keep_c_files):
+            filepath = f"{os.path.splitext(built_file)[0]}.c"
+            if (not os.path.isfile(filepath)):
+                logger.debug(msg=f"[{cy_clean.__name__}]: cannot remove file: does not exist {filepath}")
+                continue
+
             FilesAndFolders.remove_file(targetfilename=f"{os.path.splitext(built_file)[0]}.c")
         # Move annotation html files
         src_htmlpath = f"{os.path.splitext(built_file)[0]}.html"
         dst_htmlpath = os.path.join(annotations_dir, os.path.basename(src_htmlpath))
-        logger.debug(msg=f"Moving annotation files from {src_htmlpath} to {dst_htmlpath}")
+        logger.debug(msg=f"[{cy_clean.__name__}] - Moving annotation files from {src_htmlpath} to {dst_htmlpath}")
         FilesAndFolders.move_file(
             srcfilename=src_htmlpath,
             dstfilename=dst_htmlpath,
@@ -135,10 +148,29 @@ def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
         # Move PYD files
         built_file_folder = os.path.dirname(built_file)
         pyd_file = ([fn for fn in os.listdir(project_dir) if (_filename in fn and ('.pyd' in fn or '.so' in fn))])[0]
-        logger.debug(msg=f"Moving pyd files from {os.path.join(project_dir, pyd_file)} to {os.path.join(built_file_folder, pyd_file)}")
+        logger.debug(msg=f"[{cy_clean.__name__}] - Moving pyd files from {os.path.join(project_dir, pyd_file)} to {os.path.join(built_file_folder, pyd_file)}")
         FilesAndFolders.move_file(
             srcfilename=os.path.join(project_dir, pyd_file),
             dstfilename=os.path.join(built_file_folder, pyd_file),
             overwrite=True
         )
+def cy_interface(target_files:[str] = None):
+    """ Creates .pyi interface files from the provided target_files """
+
+    logger.debug(msg=f"[{cy_interface.__name__}] - generating interface files")
+
+    # 1. Get target files
+    if (target_files == None):
+        target_files = cy_list()
+    else:
+        target_files = cy_list(target_files=target_files)
+
+
+    for built_file in target_files:
+        if (not os.path.isfile(built_file)):
+            logger.info(msg=f"File {built_file} not found; skipping..")
+            continue
+        _filename = os.path.splitext(os.path.basename(built_file))[0]    # no ext
+        logger.debug(msg=f"Creating .pyi for {built_file}")
+        logger.debug(msg=f"Creating .pyi for {_filename}")
 
