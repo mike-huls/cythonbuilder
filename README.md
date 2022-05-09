@@ -124,10 +124,10 @@ cybuilder.cy_clean(target_files=['some_name'])
 
 4. Setting debug level for verbose logging
 ```python
-import logging
 from cythonbuilder import logger
+from cythonbuilder import set_logger_debug_mode
 
-logger.setLevel(logging.DEBUG)
+set_logger_debug_mode(logger=logger)
 ```
 
 ### In-depth, step by step Explanation

@@ -1,10 +1,9 @@
-import logging
-import os
 import sys
 
 from cythonbuilder import cython_builder
 from cythonbuilder import appsettings
 from cythonbuilder import helpers
+from cythonbuilder import set_logger_debug_mode
 from cythonbuilder.services import logger
 
 def display_help():
@@ -49,9 +48,10 @@ def main():
 
     # Logging level
     if (VERBOSE):
-        from cythonbuilder.logs import set_format
-        set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
-        logger.setLevel(logging.DEBUG)
+        set_logger_debug_mode(logger=logger)
+        # from cythonbuilder.logs import set_format
+        # set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
+        # logger.setLevel(logging.DEBUG)
 
 
 
@@ -136,7 +136,7 @@ def main():
         target_filenames = args if (len(args) > 0) else None
 
         # Clean
-        logger.info(msg=f"[{cmd1}] - Building Cython files..")
+        logger.info(msg=f"[{cmd1}] - Cleaning Cython files..")
         try:
             found_pyx_files: [str] = cython_builder.cy_list(target_files=target_filenames)
             logger.debug(msg=f"Found {len(found_pyx_files)} to build")
