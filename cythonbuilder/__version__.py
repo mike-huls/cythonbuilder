@@ -1,0 +1,9 @@
+__package_name__ = "cythonbuilder"
+__version__ = "0.1.1"
+__author__ = 'Mike Huls'
+__license__ = "MIT"
+__maintainer__ = "Mike Huls"
+__email__ = "mikehuls42@gmail.com"
+__status__ = "Development"
+__description__ = "CythonBuilder; automated compiling and packaging of Cython code"
+__project_url__ = "https://github.com/mike-huls/cythonbuilder"
