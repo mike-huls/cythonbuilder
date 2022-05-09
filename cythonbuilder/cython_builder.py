@@ -6,7 +6,7 @@ import sys
 from cythonbuilder.helpers import FilesAndFolders
 from cythonbuilder.services import logger
 from cythonbuilder import appsettings
-
+from cythonbuilder import pyigenerator
 
 project_dir = os.getcwd()
 
@@ -166,11 +166,12 @@ def cy_interface(target_files:[str] = None):
         target_files = cy_list(target_files=target_files)
 
 
-    for built_file in target_files:
-        if (not os.path.isfile(built_file)):
-            logger.info(msg=f"File {built_file} not found; skipping..")
+    for pyx_fullpath in target_files:
+        if (not os.path.isfile(pyx_fullpath)):
+            logger.info(msg=f"File {pyx_fullpath} not found; skipping..")
             continue
-        _filename = os.path.splitext(os.path.basename(built_file))[0]    # no ext
-        logger.debug(msg=f"Creating .pyi for {built_file}")
-        logger.debug(msg=f"Creating .pyi for {_filename}")
+        pyi_fullpath = f"{os.path.splitext(pyx_fullpath)[0]}.pyi"
+        logger.debug(msg=f"Creating .pyi for {pyx_fullpath}")
+
+        pyigenerator.read_write_pyx_to_pyi(target_pyx_path=pyx_fullpath, target_pyi_path=pyi_fullpath)
 
