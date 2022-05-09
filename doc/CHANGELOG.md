@@ -10,14 +10,17 @@ All notable changes to this project will be documented in this file.
  
 
 ## Upcoming features
- - `cybuilder clean` to clean up like after a build
+- Generate .pyi files from the .pyx files
 <hr>
 
 
 ## 2022-05-09
 ### Added
-- Added `cybuilder init` 
-- Added `cybuilder help` 
-- Added `cybuilder list` 
-- Added `cybuilder build` 
+- `cybuilder init` 
+- `cybuilder help` 
+- `cybuilder list` 
+- `cybuilder build`
+- `cybuilder clean` to clean up like after a build
+### Changed
+- README.md - new workflow
 <hr>

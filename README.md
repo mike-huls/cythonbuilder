@@ -66,39 +66,68 @@ pip install cythonbuilder
 ```
 
 ## How to use
-CythonBuilder makes it easy to use Cython in your Python project by automating the compilation, building and packaging process.
+CythonBuilder makes it easy to use Cython in your Python project by automating the building process.
 You can use CythonBuilder from the commandline or import it as a package in Python. 
+Generated files can be imported in Python directly
 
 
 ### With Commandline
-1. <b>Initialize</b>  
-In your project directory, call `cybuilder init`. This creates the `/ext` folder.
+Add `-v` (verbose) for more information 
+1. Listing files with and without filter
+```commandline
+cybuilder list
+cybuilder list file1 file2.pyx
+```
 
-2. <b>Organize</b>  
-Place all of your Cython files in `/ext/pyxfiles`
+2. Build with and without optional build arguments 
+```commandline
+cybuilder build
+cybuilder build --include-numpy --no-annotation --no-cleanup
+```
 
-3. <b>Compile and package</b>  
-Simply call `cybuilder build` to build all Cythonfiles in `/ext/pyxfiles`. 
-Alternatively call `cybuilder build filename` to package specific files (no .pyx needed)
+3. Clean
+```commandline
+cybuilder clean 
+cybuilder clean --no-cleanup
+```
 
-4. <b>Import</b>
-All packages en up in `/ext` so you can simply `from ext import yourfilename`.
-
+<hr>
 
 ### With python
+1. Listing files with and without filter
 ```python
 import cythonbuilder as cybuilder
 
-cybuilder.init()
-cybuilder.just_build(targetfilenames=["my_cy_package"])
+print(cybuilder.cy_list())                                  # without a filter
+print(cybuilder.cy_list(target_files=['some_name.pyx']))    # with a filter
+```
 
-from ext import my_cy_package
+2. Build with and without optional build arguments  (cleans automatically afterwards)
+```python
+import cythonbuilder as cybuilder
 
-my_cy_package.some_function()
+cybuilder.cy_build()
+cybuilder.cy_build(target_files=['some_name.pyx'], include_numpy=False, create_annotations=False)  # with a filter
+```
+
+3. Clean
+```python
+import cythonbuilder as cybuilder 
+
+cybuilder.cy_clean()
+cybuilder.cy_clean(target_files=['some_name'])
+```
+
+4. Setting debug level for verbose logging
+```python
+import logging
+from cythonbuilder import logger
+
+logger.setLevel(logging.DEBUG)
 ```
 
 ### In-depth, step by step Explanation
-I've written a few articles that explain why Python is slow, why we need Cython and how CythonBuilder helps us develop fast code easily:
+I've written a few articles that explain why Python is slow, why Cython can be a solution and how CythonBuilder helps us develop fast code easily:
 - [Why Python is so slow and how to speed it up](https://mikehuls.medium.com/why-is-python-so-slow-and-how-to-speed-it-up-485b5a84154e)
 - [Getting started with Cython; how to perform >1.7 billion calculations per second with Python](https://mikehuls.medium.com/getting-started-with-cython-how-to-perform-1-7-billion-calculations-per-second-in-python-b83374cfcf77)
 - [Cython for data science: 6 steps to make this Pandas dataframe operation over 100x faster](https://mikehuls.medium.com/cython-for-data-science-6-steps-to-make-this-pandas-dataframe-operation-over-100x-faster-1dadd905a00b)
