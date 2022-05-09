@@ -21,9 +21,9 @@ setuptools.setup(
     author_email=__email__,
     url=__project_url__,
     project_urls={
-        "Source": "https://github.com/mike-huls/cythonbuilder/",
-        "Bug Tracker": "https://github.com/mike-huls/cythonbuilder/issues",
-        "Documentation": "https://github.com/mike-huls/cythonbuilder/blob/main/README.md/",
+        "Source": "https://github.com/mike-huls/cython-builder/",
+        "Bug Tracker": "https://github.com/mike-huls/cython-builder/issues",
+        "Documentation": "https://github.com/mike-huls/cython-builder/blob/main/README.md/",
     },
     # Entry points make CLI access possible
     entry_points={
