@@ -49,7 +49,7 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
             # print(pyx_line, f"|{pyx_line_prev[-1]}|", line_is_function(line=pyx_line_prev))
             if (line_is_function(line=pyx_line_prev)):
                 pyx_line = f"{cur_line_spaces * ' '}..."
-        print(pyx_line)
+        # print(pyx_line)
 
 
 
