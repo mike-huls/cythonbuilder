@@ -34,14 +34,21 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         pyx_line = pyx_lines[line_idx]
 
         # Line details
+        cur_line_is_import = line_is_import(line=pyx_line)
         cur_line_is_function = line_is_function(line=pyx_line)
         cur_line_is_class = line_is_class(line=pyx_line)
         cur_line_spaces = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
         cur_line_indentation: int = int(cur_line_spaces / spaces_for_one_tab) if (cur_line_spaces > 0) else cur_line_spaces
 
         # FILTERING     Skip if indentation > 2. That way we are one indentation deeper than method content
-        if (cur_line_indentation >= 3):
+        if (not cur_line_is_import and not cur_line_is_class and not cur_line_is_function):
             continue
+        # if (cur_line_indentation >= 3):
+        #     continue
+
+        # print(pyx_line, '\t\t', cur_line_is_function, cur_line_is_class)
+
+
         # FILTERING     Skip if previous line is a function def
         if (line_idx > 0):
             pyx_line_prev = pyx_lines[line_idx - 1]
@@ -49,15 +56,6 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
             # print(pyx_line, f"|{pyx_line_prev[-1]}|", line_is_function(line=pyx_line_prev))
             if (line_is_function(line=pyx_line_prev)):
                 pyx_line = f"{cur_line_spaces * ' '}..."
-        # print(pyx_line)
-
-
-
-
-        # print(pyx_line)
-
-
-
 
         # only keep lines when the next line has a greater indentation
         # if (line_idx == len(pyx_lines) - 1):
@@ -74,6 +72,7 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
             py_lines.append(py_line)
 
 
+
     with open(target_pyi_path, 'w') as pyi_out:
         pyi_out.writelines([f"{line}\n" for line in py_lines])
         # for line in py_lines:
@@ -81,10 +80,12 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         #     pyi_out.write(line)
 
 
+def line_is_import(line:str) -> bool:
+    """ """
+    return line.split(" ")[0] in ['import', 'cimport']
 def line_is_class(line:str) -> bool:
     """ """
     return line[-1] == ":" and "class" in line.split(" ")
-
 
 def line_is_function(line:str) -> bool:
     """ """
@@ -106,13 +107,18 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
     line = line.strip(' ')
 
     # 3. Keep only lines that start with def, cpdef or cdef
-    begin_words = ['def', 'cdef', 'cpdef', 'class']
+    begin_words = ['def', 'cdef', 'cpdef', 'class', 'cimport', 'import']
     if not any([line[:len(w)] == w for w in begin_words]):
         return
 
-    # take out classes
-    if (line.split(" ")[1] == 'class'):
-        line = " ".join(line.split(" ")[1:])
+    # If class is in the line: make sure it adheres to python def
+    splitline = line.split(" ")
+    if (splitline[1] == 'class'):
+        line = " ".join(splitline[1:])
+    if (splitline[0] == 'cimport' or splitline[0] == 'import'):
+        splitline[0] = 'import'
+        line = " ".join(splitline)
+
 
     # 4. Start replacing lines
     line_parts = line.split(" ")
@@ -124,10 +130,16 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
 
 
     # 5. Handle function types
-    if (line[-1] == ":"):
+    if (line_is_function(line=line)):
         array_between_brakcets = re.findall('\(.*?\)',line)
+
         for brackets in array_between_brakcets:
+            # Remove return type definition
+            func_part_one_old = line.replace(f"{brackets}:", "")
+            func_part_one_new = " ".join([func_part_one_old.split(" ")[0], func_part_one_old.split(" ")[-1]])
+            line = line.replace(func_part_one_old, func_part_one_new)
             for argument in brackets.split(","):
+
                 argument = argument.strip("()")
                 arg_array = [a for a in argument.split(" ") if (len(a) > 0)]
                 if (len(arg_array) <= 1):
@@ -135,7 +147,9 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
                 var_ctype = arg_array[0]
                 var_name = arg_array[1]
                 py_type = convert_type_cy_to_py(cy_type=var_ctype)
+                # print(f"---{func_part_one} ", f'{var_name}:{py_type}')
                 line = line.replace(argument, f'{var_name}:{py_type}')
+
         spaces = " " * spaces_for_one_tab * (indentation + 1)
         line = line + f"\n{spaces}..."
     return indentation * spaces_for_one_tab * ' ' + line
