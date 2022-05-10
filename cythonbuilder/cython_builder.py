@@ -99,6 +99,7 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
         ext_modules=cythonize(ext_modules),
         # buid_dir=path_build_dir
     )
+
 def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
     """ Clean up all files """
     logger.debug(msg=f"[{cy_clean.__name__}] - start cy_clean with {target_files}")

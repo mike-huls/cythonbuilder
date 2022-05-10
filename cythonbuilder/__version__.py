@@ -1,5 +1,5 @@
 __package_name__ = "cythonbuilder"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __author__ = 'Mike Huls'
 __license__ = "MIT"
 __maintainer__ = "Mike Huls"

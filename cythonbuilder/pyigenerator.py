@@ -25,24 +25,54 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         if (indent % spaces_for_one_tab != 0):
             raise ValueError(f"Found invalid indentation: {indent} not divisible by {spaces_for_one_tab}")
 
+
+
     # Convert lines to py
     py_lines:[str] = []
-    # todo only keep lines when the next line has a greater indentation
     for line_idx in range(len(pyx_lines)):
-        if (line_idx == len(pyx_lines) - 1):
-            print("breaking")
-            break
-
-
-        current_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
-        nextline_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx + 1])
-        if (nextline_indentation <= current_indentation):
-            continue
-
+        # pyx line to filter
         pyx_line = pyx_lines[line_idx]
+
+        # Line details
+        cur_line_is_function = line_is_function(line=pyx_line)
+        cur_line_is_class = line_is_class(line=pyx_line)
+        cur_line_spaces = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
+        cur_line_indentation: int = int(cur_line_spaces / spaces_for_one_tab) if (cur_line_spaces > 0) else cur_line_spaces
+
+        # FILTERING     Skip if indentation > 2. That way we are one indentation deeper than method content
+        if (cur_line_indentation >= 3):
+            continue
+        # FILTERING     Skip if previous line is a function def
+        if (line_idx > 0):
+            pyx_line_prev = pyx_lines[line_idx - 1]
+            pyx_line_prev.strip(' ')
+            # print(pyx_line, f"|{pyx_line_prev[-1]}|", line_is_function(line=pyx_line_prev))
+            if (line_is_function(line=pyx_line_prev)):
+                pyx_line = f"{cur_line_spaces * ' '}..."
+        print(pyx_line)
+
+
+
+
+        # print(pyx_line)
+
+
+
+
+        # only keep lines when the next line has a greater indentation
+        # if (line_idx == len(pyx_lines) - 1):
+        #     print("breaking")
+        #     break
+        # current_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
+        # nextline_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx + 1])
+        # if (nextline_indentation <= current_indentation):
+        #     continue
+
+        # print('0', pyx_line)
         py_line = pyx_line_to_pyi(line=pyx_line.strip("\n"), spaces_for_one_tab=spaces_for_one_tab)
         if (py_line != None):
             py_lines.append(py_line)
+
 
     with open(target_pyi_path, 'w') as pyi_out:
         pyi_out.writelines([f"{line}\n" for line in py_lines])
@@ -50,16 +80,17 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         #     print(line+'\n')
         #     pyi_out.write(line)
 
-def __get_line_indentation_spacecount(line: str) -> int:
-    """ How many spaces is the provided line indented? """
-    spaces: int = 0
-    if (len(line) > 0):
-        if (line[0] == ' '):
-            for letter_idx in range(len(line)):
-                if (line[letter_idx + 1] != ' '):
-                    spaces = letter_idx + 1
-                    break
-    return spaces
+
+def line_is_class(line:str) -> bool:
+    """ """
+    return line[-1] == ":" and "class" in line.split(" ")
+
+
+def line_is_function(line:str) -> bool:
+    """ """
+    line = line.strip(' ')
+    endswith_colon = line[-1] == ':'
+    return endswith_colon and not line_is_class(line=line)
 
 def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
     """ Interprets a line and converts pyx to pyi
@@ -75,7 +106,7 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
     line = line.strip(' ')
 
     # 3. Keep only lines that start with def, cpdef or cdef
-    begin_words = ['def', 'cdef', 'cpdef']
+    begin_words = ['def', 'cdef', 'cpdef', 'class']
     if not any([line[:len(w)] == w for w in begin_words]):
         return
 
@@ -91,8 +122,6 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
             line_parts[word_idx] = 'def'
     line = " ".join(line_parts)
 
-    # line = line.replace("cpdef", "def")
-    # line = line.replace("cdef", "def")
 
     # 5. Handle function types
     if (line[-1] == ":"):
@@ -127,3 +156,15 @@ def convert_type_cy_to_py(cy_type:str):
     elif (cy_type in ['char*', 'std::string', 'str']):
         return 'str'
     # print(f"{indentation * spaces_for_one_tab * ' '}{line}")
+
+
+def __get_line_indentation_spacecount(line: str) -> int:
+    """ How many spaces is the provided line indented? """
+    spaces: int = 0
+    if (len(line) > 0):
+        if (line[0] == ' '):
+            for letter_idx in range(len(line)):
+                if (line[letter_idx + 1] != ' '):
+                    spaces = letter_idx + 1
+                    break
+    return spaces
