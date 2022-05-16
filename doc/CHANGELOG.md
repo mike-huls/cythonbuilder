@@ -12,6 +12,20 @@ All notable changes to this project will be documented in this file.
 ## Upcoming features
 <hr>
 
+## 2022-05-13
+### Added
+- `__main__.py` for using cybuilder as a module like `python -m cythonbuilder help`
+### Changed
+- `pyigenerator.py pyx_line_to_pyi` - takes `-> int:` function return type into account
+- `pyigenerator.py pyx_line_to_pyi` - flips ctype function parameters around `int age` --> `age:in`
+<hr>
+
+## 2022-05-10
+### Changed
+- Added support for function return types in `pyigenerator.py`  
+- Added support for imports in `pyigenerator.py`
+<hr>
+
 
 ## 2022-05-09
 ### Added

@@ -43,17 +43,13 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         # FILTERING     Skip if indentation > 2. That way we are one indentation deeper than method content
         if (not cur_line_is_import and not cur_line_is_class and not cur_line_is_function):
             continue
-        # if (cur_line_indentation >= 3):
-        #     continue
 
-        # print(pyx_line, '\t\t', cur_line_is_function, cur_line_is_class)
 
 
         # FILTERING     Skip if previous line is a function def
         if (line_idx > 0):
             pyx_line_prev = pyx_lines[line_idx - 1]
             pyx_line_prev.strip(' ')
-            # print(pyx_line, f"|{pyx_line_prev[-1]}|", line_is_function(line=pyx_line_prev))
             if (line_is_function(line=pyx_line_prev)):
                 pyx_line = f"{cur_line_spaces * ' '}..."
 
@@ -92,6 +88,16 @@ def line_is_function(line:str) -> bool:
     line = line.strip(' ')
     endswith_colon = line[-1] == ':'
     return endswith_colon and not line_is_class(line=line)
+def line_is_c_function(line:str) -> bool:
+    is_c_function = False
+    if (line_is_function(line=line)):
+        line_parts_set = set(line.split(" "))
+        cfunction_defs = {'cpdef', 'cdef'}
+        if (len(line_parts_set.intersection(cfunction_defs)) > 0):
+            is_c_function = True
+    return is_c_function
+
+
 
 def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
     """ Interprets a line and converts pyx to pyi
@@ -131,23 +137,29 @@ def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
 
     # 5. Handle function types
     if (line_is_function(line=line)):
-        array_between_brakcets = re.findall('\(.*?\)',line)
+        if ('->' in line):
+            line = f"{line.split('->')[0].strip()}:"
 
-        for brackets in array_between_brakcets:
+        array_between_brackets = re.findall('\(.*?\)',line)
+        for brackets in array_between_brackets:
             # Remove return type definition
             func_part_one_old = line.replace(f"{brackets}:", "")
             func_part_one_new = " ".join([func_part_one_old.split(" ")[0], func_part_one_old.split(" ")[-1]])
             line = line.replace(func_part_one_old, func_part_one_new)
             for argument in brackets.split(","):
 
-                argument = argument.strip("()")
+                # Strip away parentheses and spaces
+                argument = argument.strip("() ")
+
+                # C types are split like 'int age'
                 arg_array = [a for a in argument.split(" ") if (len(a) > 0)]
                 if (len(arg_array) <= 1):
                     continue
-                var_ctype = arg_array[0]
-                var_name = arg_array[1]
+                var_ctype = arg_array[0].strip(":")
+                var_name = arg_array[1].strip(":")
+                if (line_is_c_function(line=line)):
+                    var_name, var_ctype = var_ctype, var_name
                 py_type = convert_type_cy_to_py(cy_type=var_ctype)
-                # print(f"---{func_part_one} ", f'{var_name}:{py_type}')
                 line = line.replace(argument, f'{var_name}:{py_type}')
 
         spaces = " " * spaces_for_one_tab * (indentation + 1)

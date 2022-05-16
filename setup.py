@@ -1,6 +1,14 @@
 import setuptools
 
-from cythonbuilder.__version__ import __version__, __author__, __license__, __email__, __package_name__, __project_url__, __description__
+__package_name__ = "cythonbuilder"
+__version__ = "0.1.7"
+__author__ = 'Mike Huls'
+__license__ = "MIT"
+__maintainer__ = "Mike Huls"
+__email__ = "mikehuls42@gmail.com"
+__status__ = "Development"
+__description__ = "CythonBuilder; automated compiling and packaging of Cython code"
+__project_url__ = "https://github.com/mike-huls/cythonbuilder"
 
 
 # Reads the content of your README.md into a variable to be used in the setup below
