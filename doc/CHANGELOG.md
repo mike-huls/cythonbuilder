@@ -10,6 +10,13 @@ All notable changes to this project will be documented in this file.
  
 
 ## Upcoming features
+- 
+
+
+## Logs
+
+## 2022-05-16 [0.1.8]
+- added `cli` returns a special message if no pyx files can be found
 <hr>
 
 ## 2022-05-13
