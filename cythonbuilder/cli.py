@@ -109,6 +109,7 @@ def main():
             found_pyx_files: [str] = cython_builder.cy_list(target_files=target_filenames)
             if (len(found_pyx_files) == 0):
                 logger.info(msg="No .pyx files found")
+                sys.exit(0)
             logger.debug(msg=f"Found {len(found_pyx_files)} to build")
 
             # 2. Confirm that we want to build
@@ -154,6 +155,7 @@ def main():
             found_pyx_files: [str] = cython_builder.cy_list(target_files=target_filenames)
             if (len(found_pyx_files) == 0):
                 logger.info(msg="No .pyx files found")
+                sys.exit(0)
             logger.debug(msg=f"Found {len(found_pyx_files)} to clean")
 
             # 2. Confirm that we want to build
@@ -181,6 +183,7 @@ def main():
             found_pyx_files: [str] = cython_builder.cy_list(target_files=target_filenames)
             if (len(found_pyx_files) == 0):
                 logger.info(msg="No .pyx files found")
+                sys.exit(0)
             logger.debug(msg=f"Found {len(found_pyx_files)} to create pyi files for")
 
             # 2. Confirm that we want to build
