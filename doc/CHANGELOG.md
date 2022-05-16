@@ -15,8 +15,12 @@ All notable changes to this project will be documented in this file.
 
 ## Logs
 
-## 2022-05-16 [0.1.8]
-- added `cli` returns a special message if no pyx files can be found
+## 2022-05-16 [0.1.9]
+### ADDED
+- `cli` returns a special message if no pyx files can be found
+### Fixed
+- `pyigenerator.py` `line_is_import` now also includes `from XX import YY`
+
 <hr>
 
 ## 2022-05-13

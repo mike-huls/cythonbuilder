@@ -78,7 +78,11 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
 
 def line_is_import(line:str) -> bool:
     """ """
-    return line.split(" ")[0] in ['import', 'cimport']
+    line = line.strip()
+    word_array = line.split(" ")
+    first_word_is_import = word_array[0] in ['import', 'cimport']
+    line_contains_from_import = word_array[0] == 'from' and 'import' in word_array
+    return any([first_word_is_import, line_contains_from_import])
 def line_is_class(line:str) -> bool:
     """ """
     return line[-1] == ":" and "class" in line.split(" ")
