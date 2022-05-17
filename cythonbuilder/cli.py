@@ -209,4 +209,3 @@ def main():
         logger.warning(msg=f"unknown command: '{cmd1}'")
         display_help()
 
-

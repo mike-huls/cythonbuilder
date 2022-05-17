@@ -6,10 +6,7 @@ from coloredlogs import ColoredFormatter
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-
-
-# def DEFAULT_LOG_FORMAT(spacing:int=12):
-#     return f'[%(name)s] %(asctime)s %(module)-{spacing}s %(lineno)-3d  %(message)s %(funcName)s'
+import cythonbuilder
 
 DEFAULT_DATE_FORMAT = '%H:%M:%S'
 
@@ -194,8 +191,8 @@ def set_format(logger:logging.Logger, format:str):
         )
         handler.setFormatter(fmt=coloredFormatter)
 
-def set_logger_debug_mode(logger:logging.Logger):
+def set_logger_debug_mode(logger:logging.Logger=None):
     """ Set the debug mode of the logger """
-
+    from cythonbuilder.services import logger
     set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
     logger.setLevel(logging.DEBUG)

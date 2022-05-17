@@ -1,7 +1,153 @@
 import re
+from dataclasses import dataclass
+
+from cythonbuilder.services import logger
+
+class LineConverter:
+
+    in_class_body:bool=False
+    in_func_body:bool=False
+
+    def __init__(self, line:str, file_spaces_for_one_tab:int=4):
+        self.pyx_line = line
+        self.file_spaces_for_one_tab = file_spaces_for_one_tab
+
+    # Indentation
+    @property
+    def indent_spacecount(self) -> int:
+        """ How many spaces is the provided line indented? """
+        spaces: int = 0
+        if (len(self.pyx_line) > 0):
+            if (self.pyx_line[0] == ' '):
+                for letter_idx in range(len(self.pyx_line)):
+                    if (self.pyx_line[letter_idx + 1] != ' '):
+                        spaces = letter_idx + 1
+                        break
+        return spaces
+    @property
+    def indent_tabs(self) -> int:
+        """ How many spaces is the provided line indented? """
+        spaces = get_line_indentation_spacecount(line=self.pyx_line)
+        return int(spaces / self.file_spaces_for_one_tab)
+
+    # Definitions
+    @property
+    def is_import(self) -> bool:
+        """ """
+        line = self.pyx_line.strip()
+        word_array = line.split(" ")
+        first_word_is_import = word_array[0] in ['import', 'cimport']
+        line_contains_from_import = word_array[0] == 'from' and 'import' in word_array
+        return any([first_word_is_import, line_contains_from_import])
+    @property
+    def is_class_def(self) -> bool:
+        """ """
+        return self.pyx_line[-1] == ":" and "class " in self.pyx_line
+    @property
+    def is_func_def(self) -> bool:
+        """ Is C or PY function """
+        line = self.pyx_line.strip(' ')
+        word_array = line.split()
+        endswith_colon = line[-1] == ':'
+        contains_def = len(set(word_array).intersection({'cdef', 'def', 'cpdef'})) > 0
+        is_no_class = not self.is_class_def
+        return all([endswith_colon, contains_def, is_no_class])
+    @property
+    def is_c_func_def(self) -> bool:
+        """ Is function but also a C function """
+        is_c_function = False
+        if (self.is_func_def):
+            line_parts_set = set(self.pyx_line.split(" "))
+            cfunction_defs = {'cpdef', 'cdef'}
+            if (len(line_parts_set.intersection(cfunction_defs)) > 0):
+                is_c_function = True
+        return is_c_function
+    @property
+    def is_property(self) -> bool:
+        line = self.pyx_line.strip()
+        is_property = line[0] == '@'
+        is_not_cython_property = '@cython.' not in line
+        return all([is_property, is_not_cython_property])
+    @property
+    def is_define_line(self) -> bool:
+        """ This line is not an import, function, property or class def"""
+        return any([self.is_import, self.is_class_def, self.is_func_def, self.is_property])
+
+    # translate
+    @property
+    def py_line(self) -> str:
+
+        py_line = self.pyx_line.strip()
+        if (self.is_import):
+            py_line = py_line.replace("cimport", "import")
+        if (self.is_class_def):
+            py_line = " ".join([w for w in py_line.split(" ") if (w not in ['cdef', 'cpdef'])])
+        if (self.is_func_def):
+
+            # replace definition
+            py_line = py_line.replace('cdef', 'def')
+            py_line = py_line.replace('cpdef', 'def')
+
+            # Handle return function types
+            py_return_type = None
+            if ('->' in py_line):
+                py_return_type = py_line.split('->')[1].strip().replace(":", "")
+                py_line = f"{py_line.split('->')[0].strip()}:"
+
+            array_between_brackets = re.findall('\(.*?\)', py_line)
+            for brackets in array_between_brackets:
+                # Replace C return type to -> returntype
+                func_part_one_old = py_line.replace(f"{brackets}:", "")
+                func_sig_parts = func_part_one_old.split(" ")
+                if (len(func_sig_parts) == 3):
+                    py_return_type = self.convert_type_cy_to_py(cy_type=func_sig_parts[1])
+                func_part_one_new = " ".join([func_sig_parts[0], func_sig_parts[-1]])
+                py_line = py_line.replace(func_part_one_old, func_part_one_new)
+                for argument in brackets.split(","):
+
+                    # Strip away parentheses and spaces
+                    argument = argument.strip("() ")
 
 
-# from cythonbuilder import logger
+                    if (self.is_c_func_def):
+                        # C types are like (int age)
+                        if (' ' in argument):
+                            arg_name = argument.split(' ')[1]
+                            arg_type_py = self.convert_type_cy_to_py(argument.split(' ')[0])
+                            # argument = f"{arg_name}: {arg_type_py}"
+                            py_line = py_line.replace(argument, f"{arg_name}: {arg_type_py}")
+
+            # Add python return type
+            if (py_return_type != None):
+                py_line = py_line.strip(":") + f' -> {py_return_type}:'
+
+            # Add ... to function content
+            py_line = py_line + f"\n{self.file_spaces_for_one_tab * (self.indent_tabs + 1) * ' '}..."
+        # return indentation * spaces_for_one_tab * ' ' + line
+
+        # add original indentation back
+        py_line = f"{self.file_spaces_for_one_tab * self.indent_tabs * ' '}" + py_line
+
+        return py_line
+
+
+    def convert_type_cy_to_py(self, cy_type:str):
+        """ """
+        # todo continue https://stackoverflow.com/questions/55451545/what-are-all-the-types-available-in-cython
+        cy_type = cy_type.lower()
+
+        if (cy_type in ['bint', 'bool']):
+            return 'bool'
+        elif (cy_type in ['char', 'short', 'int', 'long', 'long long']):
+            return 'int'
+        elif (cy_type in ['float', 'double', 'long double']):
+            return 'float'
+        elif (cy_type in ['float complex', 'double complex', 'complex']):
+            return 'complex'
+        elif (cy_type in ['char*', 'std::string', 'str']):
+            return 'str'
+        # print(f"{indentation * spaces_for_one_tab * ' '}{line}")
+
 
 
 def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
@@ -12,12 +158,15 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
     with open(target_pyx_path, 'r') as open_pyx:
         pyx_lines.extend(open_pyx.readlines())
 
-    # 2. Skip empty lines
+    # 2. Strip away any content after a #
+    pyx_lines = list(map(lambda l: l.split("#")[0].rstrip() if "#" in l else l, pyx_lines))
+
+    # 3. Skip empty lines
     pyx_lines = [l.strip("\n") for l in pyx_lines]
     pyx_lines = [l for l in pyx_lines if (len(l) > 0)]
 
-    # 2. Determine file indentation
-    all_indentations = [__get_line_indentation_spacecount(line=l) for l in pyx_lines]
+    # 4. Determine file indentation
+    all_indentations = [get_line_indentation_spacecount(line=l) for l in pyx_lines]
     all_indentations = [i for i in all_indentations if (i > 0)]
     spaces_for_one_tab = min(all_indentations)
     # Extra check: test wheter all are divisible by the space_for_one_tab
@@ -26,49 +175,47 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
             raise ValueError(f"Found invalid indentation: {indent} not divisible by {spaces_for_one_tab}")
 
 
-
-    # Convert lines to py
+    # 5. Convert lines to py
     py_lines:[str] = []
+    prev_line:LineConverter = None
     for line_idx in range(len(pyx_lines)):
-        # pyx line to filter
-        pyx_line = pyx_lines[line_idx]
+        pyxline = pyx_lines[line_idx]
 
-        # Line details
-        cur_line_is_import = line_is_import(line=pyx_line)
-        cur_line_is_function = line_is_function(line=pyx_line)
-        cur_line_is_class = line_is_class(line=pyx_line)
-        cur_line_spaces = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
-        cur_line_indentation: int = int(cur_line_spaces / spaces_for_one_tab) if (cur_line_spaces > 0) else cur_line_spaces
+        ld = LineConverter(line=pyxline, file_spaces_for_one_tab=spaces_for_one_tab)
 
-        # FILTERING     Skip if indentation > 2. That way we are one indentation deeper than method content
-        if (not cur_line_is_import and not cur_line_is_class and not cur_line_is_function):
-            continue
+        if (prev_line != None):
+            # Classes
+            if (prev_line.is_class_def):
+                ld.in_class_body = True
+            elif (prev_line.in_class_body and not ld.is_class_def):
+                ld.in_class_body = True
 
+            # Functions
+            if (prev_line.is_func_def):
+                ld.in_func_body = True
+            elif (prev_line.in_func_body and (not ld.is_class_def and not ld.is_func_def)):
+                ld.in_func_body = True
 
+            # if current line defines anything
+            if (ld.is_define_line):
+                ld.in_func_body = False
+                ld.in_class_body = False
 
-        # FILTERING     Skip if previous line is a function def
-        if (line_idx > 0):
-            pyx_line_prev = pyx_lines[line_idx - 1]
-            pyx_line_prev.strip(' ')
-            if (line_is_function(line=pyx_line_prev)):
-                pyx_line = f"{cur_line_spaces * ' '}..."
+            # kep define lines an any lines that are in a class_body
+            if (not ld.in_class_body and not ld.is_define_line):
+                # logger.error(msg=f"{prev_line.indent_tabs},{ld.indent_tabs} - {l_is_class}{l_is_func}-{'C' if ld.in_class_body else 'X'}{'F' if ld.in_func_body else 'X'}, {ld.is_property} {pyxline}")
+                continue
+            # else:
+            # logger.debug(msg=f"{prev_line.indent_tabs},{ld.indent_tabs} - {l_is_class}{l_is_func}-{'C' if ld.in_class_body else 'X'}{'F' if ld.in_func_body else 'X'}, {ld.is_property} {pyxline}")
 
-        # only keep lines when the next line has a greater indentation
-        # if (line_idx == len(pyx_lines) - 1):
-        #     print("breaking")
-        #     break
-        # current_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx])
-        # nextline_indentation = __get_line_indentation_spacecount(line=pyx_lines[line_idx + 1])
-        # if (nextline_indentation <= current_indentation):
-        #     continue
-
-        # print('0', pyx_line)
-        py_line = pyx_line_to_pyi(line=pyx_line.strip("\n"), spaces_for_one_tab=spaces_for_one_tab)
-        if (py_line != None):
-            py_lines.append(py_line)
+            # logger.warning(msg=f"{ld.pyx_line}")
+            # logger.debug(msg=f"{ld.py_line}")
 
 
+        prev_line = ld
+        py_lines.append(ld.py_line)
 
+    # 6. Save
     with open(target_pyi_path, 'w') as pyi_out:
         pyi_out.writelines([f"{line}\n" for line in py_lines])
         # for line in py_lines:
@@ -76,119 +223,10 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         #     pyi_out.write(line)
 
 
-def line_is_import(line:str) -> bool:
-    """ """
-    line = line.strip()
-    word_array = line.split(" ")
-    first_word_is_import = word_array[0] in ['import', 'cimport']
-    line_contains_from_import = word_array[0] == 'from' and 'import' in word_array
-    return any([first_word_is_import, line_contains_from_import])
-def line_is_class(line:str) -> bool:
-    """ """
-    return line[-1] == ":" and "class" in line.split(" ")
-
-def line_is_function(line:str) -> bool:
-    """ """
-    line = line.strip(' ')
-    endswith_colon = line[-1] == ':'
-    return endswith_colon and not line_is_class(line=line)
-def line_is_c_function(line:str) -> bool:
-    is_c_function = False
-    if (line_is_function(line=line)):
-        line_parts_set = set(line.split(" "))
-        cfunction_defs = {'cpdef', 'cdef'}
-        if (len(line_parts_set.intersection(cfunction_defs)) > 0):
-            is_c_function = True
-    return is_c_function
 
 
 
-def pyx_line_to_pyi(line: str, spaces_for_one_tab: int):
-    """ Interprets a line and converts pyx to pyi
-        :arg spaces_for_one_tab       how many spaces equals one level of indentation
-    """
-
-
-    # 1. Calculate indentation level
-    spacecount = __get_line_indentation_spacecount(line=line)
-    indentation:int = int(spacecount / spaces_for_one_tab) if (spacecount > 0) else spacecount
-
-    # 2. Remove unrequired characters
-    line = line.strip(' ')
-
-    # 3. Keep only lines that start with def, cpdef or cdef
-    begin_words = ['def', 'cdef', 'cpdef', 'class', 'cimport', 'import']
-    if not any([line[:len(w)] == w for w in begin_words]):
-        return
-
-    # If class is in the line: make sure it adheres to python def
-    splitline = line.split(" ")
-    if (splitline[1] == 'class'):
-        line = " ".join(splitline[1:])
-    if (splitline[0] == 'cimport' or splitline[0] == 'import'):
-        splitline[0] = 'import'
-        line = " ".join(splitline)
-
-
-    # 4. Start replacing lines
-    line_parts = line.split(" ")
-    for word in ['cpdef', 'cdef']:
-        if word in line_parts:
-            word_idx = line_parts.index(word)
-            line_parts[word_idx] = 'def'
-    line = " ".join(line_parts)
-
-
-    # 5. Handle function types
-    if (line_is_function(line=line)):
-        if ('->' in line):
-            line = f"{line.split('->')[0].strip()}:"
-
-        array_between_brackets = re.findall('\(.*?\)',line)
-        for brackets in array_between_brackets:
-            # Remove return type definition
-            func_part_one_old = line.replace(f"{brackets}:", "")
-            func_part_one_new = " ".join([func_part_one_old.split(" ")[0], func_part_one_old.split(" ")[-1]])
-            line = line.replace(func_part_one_old, func_part_one_new)
-            for argument in brackets.split(","):
-
-                # Strip away parentheses and spaces
-                argument = argument.strip("() ")
-
-                # C types are split like 'int age'
-                arg_array = [a for a in argument.split(" ") if (len(a) > 0)]
-                if (len(arg_array) <= 1):
-                    continue
-                var_ctype = arg_array[0].strip(":")
-                var_name = arg_array[1].strip(":")
-                if (line_is_c_function(line=line)):
-                    var_name, var_ctype = var_ctype, var_name
-                py_type = convert_type_cy_to_py(cy_type=var_ctype)
-                line = line.replace(argument, f'{var_name}:{py_type}')
-
-        spaces = " " * spaces_for_one_tab * (indentation + 1)
-        line = line + f"\n{spaces}..."
-    return indentation * spaces_for_one_tab * ' ' + line
-
-def convert_type_cy_to_py(cy_type:str):
-    """ """
-    # todo continue https://stackoverflow.com/questions/55451545/what-are-all-the-types-available-in-cython
-    cy_type = cy_type.lower()
-
-    if (cy_type in ['bint', 'bool']):
-        return 'bool'
-    elif (cy_type in ['char', 'short', 'int', 'long', 'long long']):
-        return 'int'
-    elif (cy_type in ['float', 'double', 'long double']):
-        return 'float'
-    elif (cy_type in ['float complex', 'double complex', 'complex']):
-        return 'complex'
-    elif (cy_type in ['char*', 'std::string', 'str']):
-        return 'str'
-    # print(f"{indentation * spaces_for_one_tab * ' '}{line}")
-
-
-def __get_line_indentation_spacecount(line: str) -> int:
+def get_line_indentation_spacecount(line: str) -> int:
     """ How many spaces is the provided line indented? """
     spaces: int = 0
     if (len(line) > 0):
@@ -198,3 +236,7 @@ def __get_line_indentation_spacecount(line: str) -> int:
                     spaces = letter_idx + 1
                     break
     return spaces
+def get_line_indentation(line: str, file_spaces_for_one_tab:int) -> int:
+    """ How many spaces is the provided line indented? """
+    spaces = get_line_indentation_spacecount(line=line)
+    return int(spaces / file_spaces_for_one_tab)
