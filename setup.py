@@ -1,7 +1,7 @@
 import setuptools
 
 __package_name__ = "cythonbuilder"
-__version__ = "0.1.10"
+__version__ = "0.1.12"
 __author__ = 'Mike Huls'
 __license__ = "MIT"
 __maintainer__ = "Mike Huls"

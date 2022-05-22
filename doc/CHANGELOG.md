@@ -10,12 +10,17 @@ All notable changes to this project will be documented in this file.
  
 
 ## Upcoming features
-- 
+- interface:  (numpy.ndarray elements) is not converted correctly
 
 
 ## Logs
 
-## 2022-05-16 [0.1.10]
+## 2022-05-22 - fixed interface - [0.1.12]
+### Fixed
+- `pyigenerator.py` - `convert_type_cy_to_py()` now returns cy_type if non-built-in type is provided
+
+
+## 2022-05-16 [0.1.11]
 ### ADDED
 - `cli` returns a special message if no pyx files can be found and exits
 - `pyigenerator.py` added support for class attributes
@@ -24,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
 <hr>
 
-## 2022-05-13
+## 2022-05-13 [0.1.10]
 ### Added
 - `__main__.py` for using cybuilder as a module like `python -m cythonbuilder help`
 ### Changed

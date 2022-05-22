@@ -108,7 +108,6 @@ class LineConverter:
                     # Strip away parentheses and spaces
                     argument = argument.strip("() ")
 
-
                     if (self.is_c_func_def):
                         # C types are like (int age)
                         if (' ' in argument):
@@ -146,6 +145,9 @@ class LineConverter:
             return 'complex'
         elif (cy_type in ['char*', 'std::string', 'str']):
             return 'str'
+        else:
+            # non-built-in type like np.ndarray
+            return cy_type
         # print(f"{indentation * spaces_for_one_tab * ' '}{line}")
 
 
