@@ -77,7 +77,9 @@ class LineConverter:
     @property
     def py_line(self) -> str:
 
+        # Strip and remove double spaces
         py_line = self.pyx_line.strip()
+        py_line = " ".join(py_line.split("  "))
         if (self.is_import):
             py_line = py_line.replace("cimport", "import")
         if (self.is_class_def):
@@ -95,10 +97,12 @@ class LineConverter:
                 py_line = f"{py_line.split('->')[0].strip()}:"
 
             array_between_brackets = re.findall('\(.*?\)', py_line)
+            logger.error(py_line)
             for brackets in array_between_brackets:
                 # Replace C return type to -> returntype
                 func_part_one_old = py_line.replace(f"{brackets}:", "")
                 func_sig_parts = func_part_one_old.split(" ")
+
                 if (len(func_sig_parts) == 3):
                     py_return_type = self.convert_type_cy_to_py(cy_type=func_sig_parts[1])
                 func_part_one_new = " ".join([func_sig_parts[0], func_sig_parts[-1]])
@@ -107,15 +111,33 @@ class LineConverter:
 
                     # Strip away parentheses and spaces
                     argument = argument.strip("() ")
+                    logger.debug(f"{argument=}")
 
+
+                    # Rework arguments of c-function to py-style
                     if (self.is_c_func_def):
                         # C types are like (int age)
+                        arg_name_py:str = None
+                        arg_type_py:str = None
+                        arg_default_value_py:str = None
+                        # take out arg name and type if they are so specified
                         if (' ' in argument):
-                            arg_name = argument.split(' ')[1]
+                            arg_name_py = argument.split(' ')[1]
                             arg_type_py = self.convert_type_cy_to_py(argument.split(' ')[0])
-                            # argument = f"{arg_name}: {arg_type_py}"
-                            py_line = py_line.replace(argument, f"{arg_name}: {arg_type_py}")
+                        else:
+                            arg_name_py = argument
 
+                        # Get default value
+                        if ('=' in argument):
+                            arg_default_value_py = argument.split("=")[1].strip()
+
+                        # make sure default value is not part of name
+                        if (arg_name_py != None and "=" in arg_name_py):
+                            arg_name_py = arg_name_py.split("=")[0]
+                        arg_type_py = f":{arg_type_py}" if (arg_type_py != None) else ''
+                        arg_default_value_py = f"={arg_default_value_py}" if (arg_default_value_py != None) else ''
+                        newArg = f"{arg_name_py}{arg_type_py}{arg_default_value_py}"
+                        py_line = py_line.replace(argument, newArg)
             # Add python return type
             if (py_return_type != None):
                 py_line = py_line.strip(":") + f' -> {py_return_type}:'
@@ -145,10 +167,12 @@ class LineConverter:
             return 'complex'
         elif (cy_type in ['char*', 'std::string', 'str']):
             return 'str'
+        elif (cy_type in ['void']):
+            return 'None'
         else:
             # non-built-in type like np.ndarray
             return cy_type
-        # print(f"{indentation * spaces_for_one_tab * ' '}{line}")
+
 
 
 

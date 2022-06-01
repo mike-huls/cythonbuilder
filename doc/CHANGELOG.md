@@ -10,15 +10,22 @@ All notable changes to this project will be documented in this file.
  
 
 ## Upcoming features
-- interface:  (numpy.ndarray elements) is not converted correctly
+- check if name of the built file (pyd/so) is the same as the pyx file. This makes importing difficult. Maybe before build check if there is a .py file of the same name?
 
 
 ## Logs
 
+## 2022-06-01 - fixed interface - [0.1.13]
+### Fixed
+- `pyigenerator.py` - `convert_type_cy_to_py()` added cytype void --> pytype None
+- `pyigenerator.py` - `py_line` took default values into account
+- 
+
+
 ## 2022-05-22 - fixed interface - [0.1.12]
 ### Fixed
 - `pyigenerator.py` - `convert_type_cy_to_py()` now returns cy_type if non-built-in type is provided
-
+<hr>
 
 ## 2022-05-16 [0.1.11]
 ### ADDED
