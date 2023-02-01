@@ -62,7 +62,7 @@ def main():
     if (len(args) == 0):
         display_help()
     cmd1 = helpers.CliTools.pop_arg_or_exit(arglist=args, errormessage=f"[{appsettings.package_name}] {appsettings.package_name} expects at least one argument. Check out [helpy help] for more information")
-    logger.debug(msg=f"{cmd1=}")
+    logger.debug(msg=f"cmd1={cmd1}")
 
 
     # HELPY functions
