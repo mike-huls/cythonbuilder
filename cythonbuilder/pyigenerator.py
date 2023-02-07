@@ -111,7 +111,7 @@ class LineConverter:
 
                     # Strip away parentheses and spaces
                     argument = argument.strip("() ")
-                    logger.debug(f"{argument=}")
+                    logger.debug(f"argument={argument}")
 
 
                     # Rework arguments of c-function to py-style
