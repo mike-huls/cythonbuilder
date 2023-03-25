@@ -1,7 +1,6 @@
 import sys
-import typing
 
-import typer as typer
+import typer
 
 from cythonbuilder import cython_builder
 from cythonbuilder import appsettings
