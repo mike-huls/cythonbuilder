@@ -21,9 +21,9 @@ app = typer.Typer(name="main_helpy", pretty_exceptions_enable=_VERBOSE)
 def init_cb(
         VERBOSE: bool = DefaultArgs.verbose
 ):
-    logger.info(msg=f"Initializing..")
+    logger.info(msg="Initializing..")
     cython_builder.cy_init()
-    logger.info(msg=f"Initialized")
+    logger.info(msg="Initialized")
     sys.exit(0)
 
 
