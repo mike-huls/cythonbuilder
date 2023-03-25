@@ -1,5 +1,7 @@
+import io
 import re
 from dataclasses import dataclass
+from typing import TextIO
 
 from cythonbuilder.services import logger
 
@@ -111,7 +113,6 @@ class LineConverter:
 
                     # Strip away parentheses and spaces
                     argument = argument.strip("() ")
-                    logger.debug(f"{argument=}")
 
 
                     # Rework arguments of c-function to py-style
@@ -176,13 +177,11 @@ class LineConverter:
 
 
 
-def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
+def pyx_to_pyi(open_pyx:TextIO) -> [str]:
     """ Reads all content from a pyx file, convers and writes a pyi """
 
     # 1. Read pyx file
-    pyx_lines: [str] = []
-    with open(target_pyx_path, 'r') as open_pyx:
-        pyx_lines.extend(open_pyx.readlines())
+    pyx_lines: [str] = open_pyx.readlines()
 
     # 2. Strip away any content after a #
     pyx_lines = list(map(lambda l: l.split("#")[0].rstrip() if "#" in l else l, pyx_lines))
@@ -241,12 +240,10 @@ def read_write_pyx_to_pyi(target_pyx_path: str, target_pyi_path:str):
         prev_line = ld
         py_lines.append(ld.py_line)
 
-    # 6. Save
-    with open(target_pyi_path, 'w') as pyi_out:
-        pyi_out.writelines([f"{line}\n" for line in py_lines])
-        # for line in py_lines:
-        #     print(line+'\n')
-        #     pyi_out.write(line)
+    # 6. return
+    return [f"{line}\n" for line in py_lines]
+    # with open(target_pyi_path, 'w') as pyi_out:
+    #     pyi_out.writelines([f"{line}\n" for line in py_lines])
 
 
 

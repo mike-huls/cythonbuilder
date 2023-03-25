@@ -18,9 +18,6 @@ def cy_init():
     FilesAndFolders.create_folder(folderpath=os.path.join(project_dir, appsettings.cython_extensions_dirname))
     FilesAndFolders.create_folder(folderpath=os.path.join(project_dir, appsettings.cython_anno_dirname))
     logger.debug(msg=f"[{cy_init.__name__}] - Initialized cybuilder at {project_dir}")
-
-
-
 def cy_list(target_files:[str]=None) -> [str]:
     """ Target files is optional filter. Returns a list of fullpaths to pyxfiles """
     # 1. Find all fullpaths to pyx files in all folders but the /venv
@@ -99,7 +96,6 @@ def cy_build(target_files:[str] = None, create_annotations:bool=True, include_nu
         ext_modules=cythonize(ext_modules),
         # buid_dir=path_build_dir
     )
-
 def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
     """ Clean up all files """
     logger.debug(msg=f"[{cy_clean.__name__}] - start cy_clean with {target_files}")
@@ -151,7 +147,7 @@ def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
             dstfilename=os.path.join(built_file_folder, pyd_file),
             overwrite=True
         )
-def cy_interface(target_files:[str] = None):
+def cy_interface(target_files:[str] = None, encoding:str='UTF-8'):
     """ Creates .pyi interface files from the provided target_files """
 
 
@@ -168,5 +164,11 @@ def cy_interface(target_files:[str] = None):
         pyi_fullpath = f"{os.path.splitext(pyx_fullpath)[0]}.pyi"
         logger.debug(msg=f"Creating .pyi for {pyx_fullpath}")
 
-        pyigenerator.read_write_pyx_to_pyi(target_pyx_path=pyx_fullpath, target_pyi_path=pyi_fullpath)
+        with open(pyx_fullpath, mode='r', encoding=encoding) as open_pyx:
+            pyi_content:[str] = pyigenerator.pyx_to_pyi(open_pyx=open_pyx)
+
+        with open(pyi_fullpath, 'w') as pyi_out:
+            pyi_out.writelines(pyi_content)
+
+
 

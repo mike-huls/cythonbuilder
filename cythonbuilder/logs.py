@@ -193,6 +193,5 @@ def set_format(logger:logging.Logger, format:str):
 
 def set_logger_debug_mode(logger:logging.Logger=None):
     """ Set the debug mode of the logger """
-    from cythonbuilder.services import logger
     set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
     logger.setLevel(logging.DEBUG)

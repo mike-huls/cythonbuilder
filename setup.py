@@ -1,7 +1,7 @@
 import setuptools
 
 __package_name__ = "cythonbuilder"
-__version__ = "0.1.13"
+__version__ = "0.1.15"
 __author__ = 'Mike Huls'
 __license__ = "MIT"
 __maintainer__ = "Mike Huls"
@@ -36,12 +36,12 @@ setuptools.setup(
     # Entry points make CLI access possible
     entry_points={
         'console_scripts': [
-            f'cythonbuilder=cythonbuilder.cli:main',
-            f'cybuilder=cythonbuilder.cli:main',
+            f'cythonbuilder=cythonbuilder.cli:app',
+            f'cybuilder=cythonbuilder.cli:app',
         ],
     },
     # Add packages that need to be installed along this package:
-    install_requires=['Cython', 'coloredlogs'],
+    install_requires=['Cython', 'coloredlogs', 'typer'],
     python_requires='>=3',
     # Describe this package in a few keywords:
     keywords=["pypi", "Cython", "setup", "packaging", "compilation"],  # descriptive meta-data
