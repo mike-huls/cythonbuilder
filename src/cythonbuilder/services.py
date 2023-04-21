@@ -1,7 +1,7 @@
 import logging
 
-from cythonbuilder import appsettings
-from cythonbuilder.logs import create_logger, LoggerSettings
+from src.cythonbuilder import appsettings
+from src.cythonbuilder import create_logger, LoggerSettings
 
 
 

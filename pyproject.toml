@@ -1,0 +1,25 @@
+[project]
+name = "cythonbuilder"
+version = "0.1.15"
+description = "CythonBuilder;=automated=compiling=and=packaging=of=Cython=code"
+requires-python = ">=3.9"
+readme = "README.md"
+dependencies = []
+classifiers = [ "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent",]
+[[project.authors]]
+name = "Mike=Huls"
+email = "mikehuls42@gmail.com"
+
+[build-system]
+requires = [ "setuptools>=61.0",]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/mike-huls/cythonbuilder"
+"Bug Tracker" = "https://github.com/mike-huls/cythonbuilder/issues"
+
+[project.scripts]
+cythonbuilder = "cythonbuilder=cythonbuilder.cli:app"
+cybuilder = "cythonbuilder=cythonbuilder.cli:app"
+
+[tool.setuptools]

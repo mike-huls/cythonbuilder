@@ -95,16 +95,20 @@ cybuilder clean --no-cleanup
 
 ### With python
 1. Listing files with and without filter
-```python
-import cythonbuilder as cybuilder
 
-print(cybuilder.cy_list())                                  # without a filter
-print(cybuilder.cy_list(target_files=['some_name.pyx']))    # with a filter
+```python
+
+from src import cythonbuilder as cybuilder
+
+print(cybuilder.cy_list())  # without a filter
+print(cybuilder.cy_list(target_files=['some_name.pyx']))  # with a filter
 ```
 
 2. Build with and without optional build arguments  (cleans automatically afterwards)
+
 ```python
-import cythonbuilder as cybuilder
+
+from src import cythonbuilder as cybuilder
 
 cybuilder.cy_build()
 
@@ -113,8 +117,10 @@ cybuilder.cy_build(target_files=found_files, include_numpy=False, create_annotat
 ```
 
 3. Clean
+
 ```python
-import cythonbuilder as cybuilder
+
+from src import cythonbuilder as cybuilder
 
 cybuilder.cy_clean()
 
@@ -123,9 +129,10 @@ cybuilder.cy_clean(target_files=['some_name'])
 ```
 
 4. Setting debug level for verbose logging
+
 ```python
-from cythonbuilder import logger
-from cythonbuilder import set_logger_debug_mode
+from src.cythonbuilder import logger
+from src.cythonbuilder import set_logger_debug_mode
 
 set_logger_debug_mode(logger=logger)
 ```

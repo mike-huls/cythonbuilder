@@ -1,6 +1,9 @@
 devtest/
 config/conf/*
 ext/
+__.helpy
+__setup.py
+helpy.toml
 
 
 # PyCharm

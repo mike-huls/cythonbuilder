@@ -6,7 +6,7 @@ from coloredlogs import ColoredFormatter
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-import cythonbuilder
+from src import cythonbuilder
 
 DEFAULT_DATE_FORMAT = '%H:%M:%S'
 

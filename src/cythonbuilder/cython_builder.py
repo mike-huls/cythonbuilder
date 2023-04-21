@@ -3,10 +3,10 @@ import os
 import shutil
 import sys
 
-from cythonbuilder.helpers import FilesAndFolders
-from cythonbuilder.services import logger
-from cythonbuilder import appsettings
-from cythonbuilder import pyigenerator
+from src.cythonbuilder import FilesAndFolders
+from src.cythonbuilder import logger
+from src.cythonbuilder import appsettings
+from src.cythonbuilder import pyigenerator
 
 project_dir = os.getcwd()
 
