@@ -1,12 +1,14 @@
 import re
 from typing import TextIO
 
-from src.cythonbuilder import logger
+from ..cythonbuilder.services import logger
+
 
 class LineConverter:
 
     in_class_body:bool=False
     in_func_body:bool=False
+    in_enum_body:bool=False
 
     def __init__(self, line:str, file_spaces_for_one_tab:int=4):
         self.pyx_line = line
@@ -44,9 +46,14 @@ class LineConverter:
         """ """
         return self.pyx_line[-1] == ":" and "class " in self.pyx_line
     @property
+    def is_enum_def(self) -> bool:
+        return self.pyx_line[-1] == ':' and 'def enum' in self.pyx_line
+    @property
     def is_func_def(self) -> bool:
         """ Is C or PY function """
         line = self.pyx_line.strip(' ')
+        if (len(line) == 0):
+            return False
         word_array = line.split()
         endswith_colon = line[-1] == ':'
         contains_def = len(set(word_array).intersection({'cdef', 'def', 'cpdef'})) > 0
@@ -65,6 +72,8 @@ class LineConverter:
     @property
     def is_property(self) -> bool:
         line = self.pyx_line.strip()
+        if (len(line) == 0):
+            return False
         is_property = line[0] == '@'
         is_not_cython_property = '@cython.' not in line
         return all([is_property, is_not_cython_property])
@@ -97,7 +106,7 @@ class LineConverter:
                 py_line = f"{py_line.split('->')[0].strip()}:"
 
             array_between_brackets = re.findall('\(.*?\)', py_line)
-            logger.error(py_line)
+
             for brackets in array_between_brackets:
                 # Replace C return type to -> returntype
                 func_part_one_old = py_line.replace(f"{brackets}:", "")
@@ -111,7 +120,6 @@ class LineConverter:
 
                     # Strip away parentheses and spaces
                     argument = argument.strip("() ")
-                    logger.debug(f"{argument=}")
 
 
                     # Rework arguments of c-function to py-style
@@ -146,6 +154,11 @@ class LineConverter:
             py_line = py_line + f"\n{self.file_spaces_for_one_tab * (self.indent_tabs + 1) * ' '}..."
         # return indentation * spaces_for_one_tab * ' ' + line
 
+        if (self.is_enum_def):
+            enum_name = self.pyx_line.split()[-1].replace(":", "")
+            py_line = f"class {enum_name}(Enum):"
+        if (self.in_enum_body):
+            py_line = self.pyx_line
         # add original indentation back
         py_line = f"{self.file_spaces_for_one_tab * self.indent_tabs * ' '}" + py_line
 
@@ -171,6 +184,7 @@ class LineConverter:
             return 'None'
         else:
             # non-built-in type like np.ndarray
+            print("ok")
             return cy_type
 
 
@@ -193,6 +207,7 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
     all_indentations = [get_line_indentation_spacecount(line=l) for l in pyx_lines]
     all_indentations = [i for i in all_indentations if (i > 0)]
     spaces_for_one_tab = min(all_indentations)
+
     # Extra check: test wheter all are divisible by the space_for_one_tab
     for indent in all_indentations:
         if (indent % spaces_for_one_tab != 0):
@@ -217,24 +232,24 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
             # Functions
             if (prev_line.is_func_def):
                 ld.in_func_body = True
-            elif (prev_line.in_func_body and (not ld.is_class_def and not ld.is_func_def)):
+            elif (prev_line.in_func_body and (not any([ld.is_class_def, ld.is_func_def, ld.is_enum_def]))):
                 ld.in_func_body = True
+
+            # Enums
+            if (prev_line.is_enum_def):
+                ld.in_enum_body= True
+            elif (prev_line.in_enum_body and (not any([ld.is_class_def, ld.is_func_def, ld.is_enum_def]))):
+                ld.in_enum_body = True
 
             # if current line defines anything
             if (ld.is_define_line):
                 ld.in_func_body = False
                 ld.in_class_body = False
+                ld.in_enum_body = False
 
-            # kep define lines an any lines that are in a class_body
-            if (not ld.in_class_body and not ld.is_define_line):
-                # logger.error(msg=f"{prev_line.indent_tabs},{ld.indent_tabs} - {l_is_class}{l_is_func}-{'C' if ld.in_class_body else 'X'}{'F' if ld.in_func_body else 'X'}, {ld.is_property} {pyxline}")
+            # kep define lines an any lines that are in a class_body or enum_body
+            if (not any([ld.in_class_body, ld.in_enum_body, ld.is_define_line])):
                 continue
-            # else:
-            # logger.debug(msg=f"{prev_line.indent_tabs},{ld.indent_tabs} - {l_is_class}{l_is_func}-{'C' if ld.in_class_body else 'X'}{'F' if ld.in_func_body else 'X'}, {ld.is_property} {pyxline}")
-
-            # logger.warning(msg=f"{ld.pyx_line}")
-            # logger.debug(msg=f"{ld.py_line}")
-
 
         prev_line = ld
         py_lines.append(ld.py_line)
@@ -250,15 +265,12 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
 
 def get_line_indentation_spacecount(line: str) -> int:
     """ How many spaces is the provided line indented? """
-    spaces: int = 0
-    if (len(line) > 0):
-        if (line[0] == ' '):
-            for letter_idx in range(len(line)):
-                if (line[letter_idx + 1] != ' '):
-                    spaces = letter_idx + 1
-                    break
-    return spaces
-def get_line_indentation(line: str, file_spaces_for_one_tab:int) -> int:
-    """ How many spaces is the provided line indented? """
-    spaces = get_line_indentation_spacecount(line=line)
-    return int(spaces / file_spaces_for_one_tab)
+    num_spaces:int = 0
+
+    for char in line:
+        if char == ' ':
+            num_spaces += 1
+        else:
+            break
+
+    return num_spaces

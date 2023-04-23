@@ -93,15 +93,15 @@ class FilesAndFolders:
         logger.debug(f"moving {srcfilename} to {dstfilename}")
         shutil.move(src=srcfilename, dst=dstfilename)
 
-
-class CliTools:
-    @staticmethod
-    def pop_arg_or_exit(arglist: [str], errormessage: str):
-        """ Tries to pop an arg from the list. If this is not possible: display errormessage and exit """
-        if (len(arglist) <= 0):
-            logger.error(msg=errormessage)
-            quit()
-        return arglist.pop(0).lower()
+# todo delete
+# class CliTools:
+#     @staticmethod
+#     def pop_arg_or_exit(arglist: [str], errormessage: str):
+#         """ Tries to pop an arg from the list. If this is not possible: display errormessage and exit """
+#         if (len(arglist) <= 0):
+#             logger.error(msg=errormessage)
+#             quit()
+#         return arglist.pop(0).lower()
 
 
 def package_is_installed(package_import_name:str=None) -> bool:

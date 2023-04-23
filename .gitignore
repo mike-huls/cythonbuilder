@@ -5,6 +5,7 @@ __.helpy
 __setup.py
 helpy.toml
 
+ext
 
 # PyCharm
 .idea

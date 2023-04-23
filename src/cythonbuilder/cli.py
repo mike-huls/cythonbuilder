@@ -2,12 +2,12 @@ import sys
 
 import typer
 
-from src.cythonbuilder import cython_builder
-from src.cythonbuilder import appsettings
-from src.cythonbuilder import helpers
-from src.cythonbuilder import set_logger_debug_mode
-from src.cythonbuilder.definitions import DefaultArgs
-from src.cythonbuilder import logger
+from ..cythonbuilder import cython_builder
+from ..cythonbuilder import appsettings
+from ..cythonbuilder import helpers
+from ..cythonbuilder.services import logger
+from ..cythonbuilder.logs import set_logger_debug_mode
+from ..cythonbuilder.definitions import DefaultArgs
 
 _VERBOSE = '-v' in sys.argv or '--verbose' in sys.argv
 if (_VERBOSE):

@@ -4,9 +4,9 @@ import unittest
 
 class TestExample(unittest.TestCase):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def setUp(self) -> None:
         # load_dotenv(dotenv_path=os.path.join(ROOT_DIR, 'config', 'conf', '.env'))
+        pass
 
     def test_isEqual(self):
         """ Test example """
