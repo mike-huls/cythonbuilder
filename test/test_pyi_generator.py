@@ -4,7 +4,7 @@ import unittest
 
 from src.cythonbuilder import pyigenerator
 from src.cythonbuilder.pyigenerator import LineConverter
-from src.cythonbuilder.services import logger
+from src.cythonbuilder.logs import logger
 
 
 # from config import app_config
@@ -17,7 +17,7 @@ def load_io_text(lines:str) -> typing.TextIO:
     return text_io
 
 
-class TestPyi_generator(unittest.TestCase):
+class TestPyiGenerator(unittest.TestCase):
 
     def setUp(self) -> None:
         # app_config.load_env()
@@ -32,7 +32,7 @@ class TestPyi_generator(unittest.TestCase):
         lc:LineConverter = LineConverter(line=pyd_line)
         self.assertEqual(4, lc.indent_spacecount)
 
-    def test_doublecheck_indendtation_spacecount(self):
+    def test_doublecheck_indentation_spacecount(self):
         pyd_line = """
     good_indentation:str
      bad_indentation:str"""
@@ -52,21 +52,36 @@ import normal_thing
         self.assertTrue("#" not in "".join(pyi_lines))
 
     def test_can_convert_class(self):
-        # 1. Converts regular class with methods
+        # 1. Converts cython class with methods
         pyd_class_regular = """
 cdef class MyClass(object):
     test:str
     cdef test_def(self, int num) -> int:
         return num * num
-        
+
     cpdef test_cdef(self, long num) -> float:
         return num * num
 
     def test_cpdef(self, long num) -> float:
         return num * num
     """
-        res:[str] = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_class_regular))
-        expected:[str] = ['class MyClass(object):\n', '    test:str\n', '    def test_def(self, num:int) -> int:\n        ...\n', '    def test_def(self, num:int) -> float:\n        ...\n', '    def test_def(self, long num) -> float:\n        ...\n']
+        res: [str] = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_class_regular))
+        expected: [str] = ['class MyClass(object):\n', '    test:str\n', '    def test_def(self, num:int) -> int:\n        ...\n',
+                           '    def test_def(self, num:int) -> float:\n        ...\n', '    def test_def(self, long num) -> float:\n        ...\n']
+        self.assertEqual(expected, res)
+
+        # 2. Converts Python class with methods
+        pyd_class_regular = """
+class MyClass(object):
+    test:str
+    def test_def(self, num:int) -> int:
+        return num * num
+
+    def test_nohint(self, num):
+        return num * num
+    """
+        res: [str] = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_class_regular))
+        expected: [str] = ['class MyClass(object):\n', '    test:str\n', '    def test_def(self, num:int) -> int:\n        ...\n', '    def test_nohint(self, num):\n        ...\n']
         self.assertEqual(expected, res)
 
     def test_converts_types(self):
@@ -86,6 +101,20 @@ cpdef void c_types(double a_float=0.0):
         pyi_lines: [str] = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_function_regular))
         print(pyi_lines)
         expected_pyi_lines: [str] = ['def c_types(a_float:float=0.0) -> None:\n    ...\n']
+        self.assertTrue(expected_pyi_lines, pyi_lines)
+
+    def test_converts_func_in_func(self):
+        pyd_function_regular = """
+cpdef void xxx(double a_float=0.0):
+    cdef void xxz(double b_float):
+        return double * 2
+    return test(double) * test(double)
+
+cpdef void yyy(double a_float=0.0):
+    return double * 2
+        """
+        pyi_lines: [str] = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_function_regular))
+        expected_pyi_lines: [str] = ['def xxx(a_float:float=0.0) -> None:\n    ...\n', '    def xxz(b_float:float) -> None:\n        ...\n', 'def yyy(a_float:float=0.0) -> None:\n    ...\n']
         self.assertTrue(expected_pyi_lines, pyi_lines)
 
     def test_can_convert_function(self):

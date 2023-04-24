@@ -2,7 +2,7 @@ import logging
 
 from coloredlogs import ColoredFormatter
 
-from ..cythonbuilder import appsettings
+from . import appsettings
 
 
 DEFAULT_FIELD_STYLES = dict(
@@ -53,6 +53,14 @@ def set_format(logger:logging.Logger, format:str):
             field_styles=formatter.field_styles
         )
         handler.setFormatter(fmt=coloredFormatter)
+
+def set_logger_debug_mode(logger:logging.Logger):
+    """ Set the debug mode of the logger """
+    set_format(logger=logger, format=f"[%(name)s] %(asctime)s %(module)-8s %(lineno)-3d  %(message)s")
+    logger.setLevel(logging.DEBUG)
+
+logger.setLevel(level=logging.INFO)
+
 
 ch.setFormatter(fmt=coloredFormatter)
 logger.addHandler(hdlr=ch)

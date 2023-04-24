@@ -2,7 +2,7 @@ import os
 import shutil
 
 from .definitions import PACKAGE_ROOT
-from .services import logger
+from .logs import logger
 
 
 class FilesAndFolders:

@@ -1,6 +1,6 @@
 import unittest
 
-from src.cythonbuilder.services import logger, set_logger_debug_mode
+from src.cythonbuilder.logs import logger, set_logger_debug_mode
 
 
 

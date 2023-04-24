@@ -19,7 +19,7 @@ Homepage = "https://github.com/mike-huls/cythonbuilder"
 "Bug Tracker" = "https://github.com/mike-huls/cythonbuilder/issues"
 
 [project.scripts]
-cythonbuilder = "cythonbuilder=cythonbuilder.cli:app"
-cybuilder = "cythonbuilder=cythonbuilder.cli:app"
+cythonbuilder = "cythonbuilder.cli:app"
+cybuilder = "cythonbuilder.cli:app"
 
 [tool.setuptools]

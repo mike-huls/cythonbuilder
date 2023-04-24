@@ -1,7 +1,7 @@
 import re
 from typing import TextIO
 
-from ..cythonbuilder.services import logger
+from .logs import logger
 
 
 class LineConverter:
