@@ -15,6 +15,22 @@ All notable changes to this project will be documented in this file.
 
 ## Logs
 
+## 2023-04-24 - Upgraded package - added emum support for pyi generator - [0.1.15]
+### Added
+- pyigenerator now includes support for enums
+### Fixed
+- Project now build with buildtools - uses pyproject.toml
+<hr>
+
+
+## 2023-03-25 - Upgraded package - added emum support for pyi generator - [0.1.14]
+### Changed
+- Upgraded cli
+### Fixed
+- pyigenerator now reads in utf-8
+<hr>
+
+
 ## 2022-06-01 - fixed interface - [0.1.13]
 ### Fixed
 - `pyigenerator.py` - `convert_type_cy_to_py()` added cytype void --> pytype None

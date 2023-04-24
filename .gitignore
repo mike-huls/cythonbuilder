@@ -1,6 +1,7 @@
 devtest/
 config/conf/*
 ext/
+devtest/
 __.helpy
 __setup.py
 helpy.toml
