@@ -17,8 +17,12 @@ All notable changes to this project will be documented in this file.
 
 ## 2023-04-24 - Upgraded package - added emum support for pyi generator - [0.1.15]
 ### Added
+- coverage badge
 - pyigenerator now includes support for enums
+### Changed
+- updated development status
 ### Fixed
+- error in listing *.pyx files
 - Project now build with buildtools - uses pyproject.toml
 <hr>
 

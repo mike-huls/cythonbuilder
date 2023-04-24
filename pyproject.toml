@@ -5,7 +5,12 @@ description = "CythonBuilder;=automated=compiling=and=packaging=of=Cython=code"
 requires-python = ">=3.9"
 readme = "README.md"
 dependencies = ["Cython", "typer"]
-classifiers = [ "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent",]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+     "Development Status :: 3 - Beta",
+]
 [[project.authors]]
 name = "Mike=Huls"
 email = "mikehuls42@gmail.com"

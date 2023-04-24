@@ -20,6 +20,9 @@ def cy_init():
     logger.debug(msg=f"[{cy_init.__name__}] - Initialized cybuilder at {project_dir}")
 def cy_list(target_files:[str]=None) -> [str]:
     """ Target files is optional filter. Returns a list of fullpaths to pyxfiles """
+
+    target_files = [] if (target_files is None) else target_files
+
     # 1. Find all fullpaths to pyx files in all folders but the /venv
     venv_paths_folders = [os.path.dirname(path) for path in Path(project_dir).rglob('pyvenv.cfg')]
     pyx_fullpaths = [str(pyxpath) for pyxpath in Path(project_dir).rglob('*.pyx')]
@@ -27,16 +30,12 @@ def cy_list(target_files:[str]=None) -> [str]:
         pyx_fullpaths = [pf for pf in pyx_fullpaths if (venvpath not in pf)]
 
     # 2. Apply optional file name filter
-    if (target_files != None):
+    if (len(target_files) > 1):
         my_pyx_file_names = [os.path.splitext(os.path.basename(p))[0] for p in pyx_fullpaths]
         target_file_names = [os.path.splitext(p)[0] for p in target_files]
 
         # Calculate overlap and difference
-        diff = set(target_file_names).difference(set(my_pyx_file_names))
         intersection = set(my_pyx_file_names).intersection(set(target_file_names))
-
-        # if (len(diff) > 0):
-        #     raise ValueError(f"Cannot find provided target files: {[f'{f}.pyx' for f in diff]}")
 
         _pyx_fullpaths = []
         for pyx in pyx_fullpaths:
@@ -44,6 +43,7 @@ def cy_list(target_files:[str]=None) -> [str]:
                 if (f"{ins}.pyx" in pyx):
                     _pyx_fullpaths.append(pyx)
         pyx_fullpaths = _pyx_fullpaths
+
     return pyx_fullpaths
 def cy_build(target_files:[str] = None, create_annotations:bool=True, include_numpy:bool=False):
     """ Builds all pyx files in the /ext folder """

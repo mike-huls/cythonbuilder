@@ -1,7 +1,7 @@
 import re
 from typing import TextIO
 
-from .logs import logger
+# from .logs import logger
 
 
 class LineConverter:
@@ -217,6 +217,7 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
     # 5. Convert lines to py
     py_lines:[str] = []
     prev_line:LineConverter = None
+    contains_enum:bool = False
     for line_idx in range(len(pyx_lines)):
         pyxline = pyx_lines[line_idx]
 
@@ -238,6 +239,7 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
             # Enums
             if (prev_line.is_enum_def):
                 ld.in_enum_body= True
+                contains_enum = True
             elif (prev_line.in_enum_body and (not any([ld.is_class_def, ld.is_func_def, ld.is_enum_def]))):
                 ld.in_enum_body = True
 
@@ -253,6 +255,10 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
 
         prev_line = ld
         py_lines.append(ld.py_line)
+
+    # 6. Add additional imports
+    if contains_enum:
+        py_lines.insert(0, "from enum import Enum\n")
 
     # 6. return
     return [f"{line}\n" for line in py_lines]
