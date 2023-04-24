@@ -1,16 +1,11 @@
 [project]
 name = "cythonbuilder"
-version = "0.1.15"
+version = "0.0.16"
 description = "CythonBuilder;=automated=compiling=and=packaging=of=Cython=code"
 requires-python = ">=3.9"
 readme = "README.md"
-dependencies = ["Cython", "typer"]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-     "Development Status :: 3 - Beta",
-]
+dependencies = [ "Cython", "typer",]
+classifiers = [ "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Development Status :: 4 - Beta",]
 [[project.authors]]
 name = "Mike=Huls"
 email = "mikehuls42@gmail.com"
