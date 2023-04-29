@@ -147,7 +147,8 @@ cpdef enum PluginType:
     GREEN='GREEN'
         """
         res = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_function_regular))
-        self.assertEqual(res, ['class PluginType(Enum):\n', "        RED='RED'\n", "        BLUE='BLUE'\n", "        GREEN='GREEN'\n", '                \n'])
+        expected:[str] = ['from enum import Enum\n\n', 'class PluginType(Enum):\n', "        RED='RED'\n", "        BLUE='BLUE'\n", "        GREEN='GREEN'\n", '                \n']
+        self.assertEqual(expected, res)
         self.assertTrue("RED" in "".join(res))
 
 #         # 2. Converts regular function py-type arg types and return type
