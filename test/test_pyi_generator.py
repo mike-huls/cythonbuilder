@@ -2,9 +2,8 @@ import io
 import typing
 import unittest
 
-from src.cythonbuilder import pyigenerator
-from src.cythonbuilder.pyigenerator import LineConverter
-from src.cythonbuilder.logs import logger
+from cythonbuilder import pyigenerator
+from cythonbuilder.pyigenerator import LineConverter
 
 
 # from config import app_config

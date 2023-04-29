@@ -101,7 +101,7 @@ cybuilder clean --no-cleanup
 
 ```python
 
-from src import cythonbuilder as cybuilder
+from cythonbuilderr import cythonbuilder as cybuilder
 
 print(cybuilder.cy_list())  # without a filter
 print(cybuilder.cy_list(target_files=['some_name.pyx']))  # with a filter
@@ -134,8 +134,8 @@ cybuilder.cy_clean(target_files=['some_name'])
 4. Setting debug level for verbose logging
 
 ```python
-from src.cythonbuilder import logger
-from src.cythonbuilder import set_logger_debug_mode
+from cythonbuilderr import logger
+from cythonbuilderr import set_logger_debug_mode
 
 set_logger_debug_mode(logger=logger)
 ```

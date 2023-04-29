@@ -5,8 +5,7 @@ import sys
 
 from .helpers import FilesAndFolders
 from .helpers import logger
-from . import appsettings
-from . import pyigenerator
+from . import pyigenerator, appsettings
 
 project_dir = os.getcwd()
 
