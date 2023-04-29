@@ -1,22 +1,26 @@
 [project]
 name = "cythonbuilder"
-version = "0.0.17"
+version = "0.0.19"
 description = "CythonBuilder; automated compiling and packaging of Cython code"
 requires-python = ">=3.9"
 readme = "README.md"
+classifiers = [ "Programming Language :: Python :: 3", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Development Status :: 4 - Beta",]
 dependencies = [ "Cython", "typer",]
-classifiers = [ "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Development Status :: 4 - Beta",]
-[[project.authors]]
-name = "Mike=Huls"
+[[project.maintainers]]
+name = "Mike Huls"
 email = "mikehuls42@gmail.com"
 
 [build-system]
 requires = [ "setuptools>=61.0", "wheel",]
 build-backend = "setuptools.build_meta"
 
+[project.license]
+file = "LICENSE.txt"
+
 [project.urls]
 Homepage = "https://github.com/mike-huls/cythonbuilder"
 "Bug Tracker" = "https://github.com/mike-huls/cythonbuilder/issues"
+"Say Thanks!" = "https://www.buymeacoffee.com/mikehuls"
 
 [project.scripts]
 cythonbuilder = "cythonbuilder.cli:app"

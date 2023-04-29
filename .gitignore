@@ -3,7 +3,7 @@ config/conf/*
 ext/
 devtest/
 __.helpy
-__setup.py
+setup.py
 helpy.toml
 
 ext
