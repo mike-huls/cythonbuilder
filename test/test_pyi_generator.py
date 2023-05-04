@@ -25,7 +25,6 @@ class TestPyiGenerator(unittest.TestCase):
     def test_line_indentation(self):
         self.assertEqual(pyigenerator.get_line_indentation_spacecount(line="  def test():"), 2)
         self.assertEqual(pyigenerator.get_line_indentation_spacecount(line="    a = 'hello'"), 4)
-
     def test_get_line_indentation_spacecount(self):
         pyd_line = """    test:str"""
         lc:LineConverter = LineConverter(line=pyd_line)
@@ -138,18 +137,37 @@ def no_arg_type(argument, age:int) -> int:
         self.assertTrue("def no_arg_type(argument, age:int) -> int:\n    ...\n" in "".join(res))
         self.assertTrue("    ..." in "".join(res))
 
-    def test_can_convert_enum(self):
+        def test_can_convert_enum(self):
+            # 1. Converts regular function: c-type arg types. return type
+            pyd_function_regular = """
+    cpdef enum PluginType:
+        RED='RED'
+        BLUE='BLUE'
+        GREEN='GREEN'
+"""
+            res = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_function_regular))
+            expected: [str] = ['from enum import Enum\n\n', 'class PluginType(Enum):\n', "        RED='RED'\n", "        BLUE='BLUE'\n", "        GREEN='GREEN'\n"]
+            self.assertEqual(expected, res)
+            self.assertTrue("RED" in "".join(res))
+
+    def test_doesnt_convert_name_main(self):
         # 1. Converts regular function: c-type arg types. return type
         pyd_function_regular = """
 cpdef enum PluginType:
     RED='RED'
     BLUE='BLUE'
     GREEN='GREEN'
-        """
+
+if __name__ == "__main__":
+    print("ok")
+"""
         res = pyigenerator.pyx_to_pyi(open_pyx=load_io_text(lines=pyd_function_regular))
-        expected:[str] = ['from enum import Enum\n\n', 'class PluginType(Enum):\n', "        RED='RED'\n", "        BLUE='BLUE'\n", "        GREEN='GREEN'\n", '                \n']
+        expected:[str] = ['from enum import Enum\n\n', 'class PluginType(Enum):\n', "        RED='RED'\n", "        BLUE='BLUE'\n", "        GREEN='GREEN'\n", '       \n']
         self.assertEqual(expected, res)
         self.assertTrue("RED" in "".join(res))
+        self.assertTrue("main" not in "".join(res))
+        self.assertTrue("name" not in "".join(res))
+
 
 #         # 2. Converts regular function py-type arg types and return type
 #         pyd_function_no_arg_type = """

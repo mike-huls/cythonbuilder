@@ -5,7 +5,7 @@ Set testpypi repository
 `poetry config repositories.testpypi https://test.pypi.org/legacy/`  
 
 Set testpypi token  
-`poetry config pypi-token.testpypi <your-token>`  
+`poetry config pypi-token.testpypi <YOUR TOKEN>`  
 
 publish to testpypi  
 `poetry publish -r testpypi`  

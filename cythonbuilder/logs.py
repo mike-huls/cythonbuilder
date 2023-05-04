@@ -17,10 +17,6 @@ DEFAULT_FIELD_STYLES = dict(
 )
 
 DEFAULT_LEVEL_STYLES = dict(
-    # spam=dict(color='white', faint=True),
-    # success=dict(color='green', bold=True),
-    # notice=dict(color='magenta'),
-    # verbose=dict(color='blue'),
     debug=dict(color='green'),
     info=dict(color='white'),
     warning=dict(color='yellow', bright=True),

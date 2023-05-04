@@ -9,6 +9,7 @@ class LineConverter:
     in_class_body:bool=False
     in_func_body:bool=False
     in_enum_body:bool=False
+    in_name_main_body:bool=False
 
     def __init__(self, line:str, file_spaces_for_one_tab:int=4):
         self.pyx_line = line
@@ -45,6 +46,13 @@ class LineConverter:
     def is_class_def(self) -> bool:
         """ """
         return self.pyx_line[-1] == ":" and "class " in self.pyx_line
+    @property
+    def is_name_main_def(self) -> bool:
+        """ """
+        # Clean quotes off
+        pyline = '"'.join(self.pyx_line.split("'"))
+        pyline = ''.join(pyline.split(" "))
+        return '__name__=="__main__"' in pyline
     @property
     def is_enum_def(self) -> bool:
         return self.pyx_line[-1] == ':' and 'def enum' in self.pyx_line
@@ -159,7 +167,10 @@ class LineConverter:
             py_line = f"class {enum_name}(Enum):"
         if (self.in_enum_body):
             py_line = self.pyx_line
+        if (self.is_name_main_def or self.in_name_main_body):
+            py_line = "   "
         # add original indentation back
+
         py_line = f"{self.file_spaces_for_one_tab * self.indent_tabs * ' '}" + py_line
 
         return py_line
@@ -184,7 +195,6 @@ class LineConverter:
             return 'None'
         else:
             # non-built-in type like np.ndarray
-            print("ok")
             return cy_type
 
 
@@ -230,6 +240,12 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
             elif (prev_line.in_class_body and not ld.is_class_def):
                 ld.in_class_body = True
 
+            # if __name__ == "__main__"
+            if (prev_line.is_name_main_def):
+                ld.in_name_main_body = True
+            elif (prev_line.in_name_main_body):
+                ld.in_name_main_body = True
+
             # Functions
             if (prev_line.is_func_def):
                 ld.in_func_body = True
@@ -252,9 +268,12 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
             # kep define lines an any lines that are in a class_body or enum_body
             if (not any([ld.in_class_body, ld.in_enum_body, ld.is_define_line])):
                 continue
+        # if (any([ld.is_name_main_def, ld.in_name_main_body])):
+        #     ld.py_line = None
 
         prev_line = ld
-        py_lines.append(ld.py_line)
+        if (ld.py_line != '   '):
+            py_lines.append(ld.py_line)
 
     # 6. Add additional imports
     if contains_enum:
