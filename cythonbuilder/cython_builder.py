@@ -30,7 +30,7 @@ def cy_list(target_files:[str]=None) -> [str]:
         pyx_fullpaths = [pf for pf in pyx_fullpaths if (venvpath not in pf)]
 
     # 2. Apply optional file name filter
-    if (len(target_files) > 1):
+    if (len(target_files) > 0):
         my_pyx_file_names = [os.path.splitext(os.path.basename(p))[0] for p in pyx_fullpaths]
         target_file_names = [os.path.splitext(p)[0] for p in target_files]
 

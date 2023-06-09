@@ -168,7 +168,8 @@ class LineConverter:
         if (self.in_enum_body):
             py_line = self.pyx_line
         if (self.is_name_main_def or self.in_name_main_body):
-            py_line = "   "
+            # py_line = "   "
+            return None
         # add original indentation back
 
         py_line = f"{self.file_spaces_for_one_tab * self.indent_tabs * ' '}" + py_line
@@ -272,7 +273,7 @@ def pyx_to_pyi(open_pyx:TextIO) -> [str]:
         #     ld.py_line = None
 
         prev_line = ld
-        if (ld.py_line != '   '):
+        if (ld.py_line not in ['   ', None]):
             py_lines.append(ld.py_line)
 
     # 6. Add additional imports

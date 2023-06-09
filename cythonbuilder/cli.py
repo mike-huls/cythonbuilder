@@ -29,6 +29,9 @@ def list_(
     target_filenames: typing.List[str] = typer.Option(None, "--files", help="Filter by these files"),
     VERBOSE: bool = DefaultArgs.verbose
 ):
+
+    logger.debug(target_filenames)
+
     # Lists all pyx files that can be built
     filtermsg = f" (filtered by {' '.join(target_filenames)}) " if (target_filenames) else ""
     logger.info(msg=f"Listing all pyx files{filtermsg}..")

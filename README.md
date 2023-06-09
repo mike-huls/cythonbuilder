@@ -37,7 +37,7 @@ CythonBuilder; automated compiling and packaging of Cython code
                 <img alt="DependencyStatus" src="https://img.shields.io/librariesio/release/pypi/cythonbuilder">
             </a>
             <a>
-                <img alt="CoverageStatus" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/mike-huls/cythonbuilder/main/stats/coverage.json"
+                <img alt="CoverageStatus" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/mike-huls/cythonbuilder/main/stats/coverage.json">
             </a>
         </td>
     </tr>
