@@ -79,7 +79,7 @@ Add `-v` (verbose) for more information
 1. Listing files with and without filter
 ```commandline
 cybuilder list
-cybuilder list file1 file2.pyx
+cybuilder list --files file1 file2.pyx
 ```
 
 2. Build with and without optional build arguments 

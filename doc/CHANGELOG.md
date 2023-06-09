@@ -15,6 +15,17 @@ All notable changes to this project will be documented in this file.
 
 ## Logs
 
+## 2023-06-09 - Upgraded package - added emum support for pyi generator - [0.1.19]
+### Added
+- `.coveragerc` to exclude files from coverage
+### Changed
+- pyigenerator now skips anything in `if __name__ == "__main__"`
+### Fixed
+- error in listing *.pyx files
+- README -> `cybuilder list file1 file2` --> `cybuilder list --files file1 file2`
+<hr>
+
+
 ## 2023-04-24 - Upgraded package - added emum support for pyi generator - [0.1.15]
 ### Added
 - coverage badge
