@@ -1,3 +1,6 @@
+adjust version in cythonbuilder.__init__.py
+adjust version in pyproject.toml
+
 build project
 `poetry build`
 

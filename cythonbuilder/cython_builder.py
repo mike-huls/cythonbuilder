@@ -1,3 +1,4 @@
+import pathlib
 from pathlib import Path
 import os
 import shutil
@@ -128,8 +129,11 @@ def cy_clean(target_files:[str] = None, keep_c_files:bool=False):
                 continue
 
             FilesAndFolders.remove_file(targetfilename=f"{os.path.splitext(built_file)[0]}.c")
+
         # Move annotation html files
-        src_htmlpath = f"{os.path.splitext(built_file)[0]}.html"
+        src_htmlpath = pathlib.Path(f"{os.path.splitext(built_file)[0]}.html")
+        if (not src_htmlpath.exists()):
+            continue
         dst_htmlpath = os.path.join(annotations_dir, os.path.basename(src_htmlpath))
         logger.debug(msg=f"[{cy_clean.__name__}] - Moving annotation files from {src_htmlpath} to {dst_htmlpath}")
         FilesAndFolders.move_file(
