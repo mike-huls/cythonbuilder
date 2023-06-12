@@ -15,6 +15,13 @@ All notable changes to this project will be documented in this file.
 
 ## Logs
 
+## 2023-06-12 - Minor fixes [0.1.20]
+### Fixed
+- Corrected relative import in __main__.py
+- Added coloredlogs as dependency in pyproject.toml
+<hr>
+
+
 ## 2023-06-09 - Upgraded package - added emum support for pyi generator - [0.1.19]
 ### Added
 - `.coveragerc` to exclude files from coverage
