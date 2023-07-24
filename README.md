@@ -101,7 +101,7 @@ cybuilder clean --no-cleanup
 
 ```python
 
-from cythonbuilderr import cythonbuilder as cybuilder
+from cythonbuilder import cythonbuilder as cybuilder
 
 print(cybuilder.cy_list())  # without a filter
 print(cybuilder.cy_list(target_files=['some_name.pyx']))  # with a filter
