@@ -25,7 +25,6 @@ steps:
       ref:
         include:
           - refs/tags/test-*
-          - refs/tags/acceptation-*
           - refs/tags/production-*
 
   - name: build_and_publish_pypi
@@ -50,27 +49,27 @@ steps:
     depends_on:
       - unittests
 
-  - name: build_and_publish_testpypi
-    image: python:3.12-slim-bookworm
-    pull: always
-    environment:
-      $PUBLIC_TEST_PYPI_TOKEN:
-        from_secret: $PUBLIC_TEST_PYPI_TOKEN
-    commands:
-      - apt-get update
-      - apt-get install -y --no-install-recommends libpq-dev gcc python3-dev build-essential
-      - python -m pip install --upgrade pip
-      - python -m pip install poetry
-      - python -m poetry install
-      - python -m poetry build
-      - python -m poetry config pypi-token.pypi "$PUBLIC_TEST_PYPI_TOKEN"
-      - python -m poetry publish
-    when:
-      ref:
-        include:
-          - refs/tags/test-*
-    depends_on:
-      - unittests
+#  - name: build_and_publish_testpypi
+#    image: python:3.12-slim-bookworm
+#    pull: always
+#    environment:
+#      $PUBLIC_TEST_PYPI_TOKEN:
+#        from_secret: $PUBLIC_TEST_PYPI_TOKEN
+#    commands:
+#      - apt-get update
+#      - apt-get install -y --no-install-recommends libpq-dev gcc python3-dev build-essential
+#      - python -m pip install --upgrade pip
+#      - python -m pip install poetry
+#      - python -m poetry install
+#      - python -m poetry build
+#      - python -m poetry config pypi-token.pypi "$PUBLIC_TEST_PYPI_TOKEN"
+#      - python -m poetry publish
+#    when:
+#      ref:
+#        include:
+#          - refs/tags/test-*
+#    depends_on:
+#      - unittests
 
 
   - name: slack_message
@@ -102,30 +101,30 @@ steps:
     depends_on:
       - build_and_publish_pypi
 
-  - name: slack_message_test
-    image: plugins/slack
-    pull: if-not-exists
-    settings:
-      webhook:
-        from_secret: SLACK_WEBHOOK_URL
-      template: >
-        {{#success build.status}}
-          ✅ Successfully published *{{repo.name}}* to test.PyPI!
-          🏷️ {{build.tag}}
-          🔨 <{{build.link}}| Build #{{build.number}}>
-          🔗 <https://github.com/{{ repo.owner }}/{{ repo.name }}/commit/{{ build.commit }}|Commit: {{ truncate build.commit 8 }}>
-          👤 {{build.author.name}}
-        {{else}}
-          ❌ Error publishing *{{repo.name}}* to test.PyPI
-          🏷️ {{build.tag}}
-          🔨 <{{build.link}}| Build #{{build.number}}>
-          🔗 <https://github.com/{{ repo.owner }}/{{ repo.name }}/commit/{{ build.commit }}|Commit: {{ truncate build.commit 8 }}>
-          👤 {{build.author.name}}
-        {{/success}}
-    when:
-      status: [ success, failure ]
-      ref:
-        include:
-          - refs/tags/test-*
-    depends_on:
-      - build_and_publish_testpypi
+#  - name: slack_message_test
+#    image: plugins/slack
+#    pull: if-not-exists
+#    settings:
+#      webhook:
+#        from_secret: SLACK_WEBHOOK_URL
+#      template: >
+#        {{#success build.status}}
+#          ✅ Successfully published *{{repo.name}}* to test.PyPI!
+#          🏷️ {{build.tag}}
+#          🔨 <{{build.link}}| Build #{{build.number}}>
+#          🔗 <https://github.com/{{ repo.owner }}/{{ repo.name }}/commit/{{ build.commit }}|Commit: {{ truncate build.commit 8 }}>
+#          👤 {{build.author.name}}
+#        {{else}}
+#          ❌ Error publishing *{{repo.name}}* to test.PyPI
+#          🏷️ {{build.tag}}
+#          🔨 <{{build.link}}| Build #{{build.number}}>
+#          🔗 <https://github.com/{{ repo.owner }}/{{ repo.name }}/commit/{{ build.commit }}|Commit: {{ truncate build.commit 8 }}>
+#          👤 {{build.author.name}}
+#        {{/success}}
+#    when:
+#      status: [ success, failure ]
+#      ref:
+#        include:
+#          - refs/tags/test-*
+#    depends_on:
+#      - build_and_publish_testpypi

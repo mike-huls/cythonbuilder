@@ -1,5 +1,11 @@
-# CythonBuilder
-CythonBuilder; automated compiling and packaging of Cython code
+# CythonBuilder: automated compiling and packaging of Cython code
+
+|         |                                                                                                                                                                                                                               |
+|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Testing | ![Codecov](https://img.shields.io/codecov/c/github/mike-huls/cythonbuilder)                                                                                                                                                   |
+| Package | [![PyPI Latest Release](https://img.shields.io/pypi/v/cachr.svg)](https://pypi.org/project/cachr/) [![PyPI Downloads](https://img.shields.io/pypi/dm/cachr.svg?label=PyPI%20downloads)](https://pypistats.org/packages/cachr) |
+| Meta    | ![GitHub License](https://img.shields.io/github/license/mike-huls/cachr)                                                                                                                                                      |
+
 
 <table>
     <tr>
