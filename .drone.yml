@@ -21,7 +21,7 @@ steps:
       - python -m coverage run -m unittest discover -s test/ -p "test_*.py"
       - python -m coverage xml
       - env
-      - codecov -t "CODECOV_TOKEN" --commit="$DRONE_COMMIT_SHA" --branch="$DRONE_BRANCH"
+      - codecov -t "$CODECOV_TOKEN" --commit="$DRONE_COMMIT_SHA" --branch="$DRONE_BRANCH"
     when:
       ref:
         include:
