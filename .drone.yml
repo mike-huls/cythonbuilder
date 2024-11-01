@@ -54,7 +54,7 @@ steps:
     pull: always
     environment:
       PUBLIC_TEST_PYPI_TOKEN:
-        from_secret: $PUBLIC_TEST_PYPI_TOKEN
+        from_secret: PUBLIC_TEST_PYPI_TOKEN
     commands:
       - apt-get update
       - apt-get install -y --no-install-recommends libpq-dev gcc python3-dev build-essential
