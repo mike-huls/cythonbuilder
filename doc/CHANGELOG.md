@@ -12,8 +12,21 @@ All notable changes to this project will be documented in this file.
 ## Upcoming features
 - check if name of the built file (pyd/so) is the same as the pyx file. This makes importing difficult. Maybe before build check if there is a .py file of the same name?
 
-
 ## Logs
+
+## 2024-11-01 - Cleanup - add CI/CD pipeline [0.1.21]
+### ADDED
+- .drone.yml for CI/CD pipeline
+### CHANGED
+- cli.py - replaced logger with typer echo
+- logs.py - simplified logger a lot
+- bumped version
+### REMOVED 
+- superfluous dependencies
+- logs.py default loggersettings
+- __version__ in __init__.py 
+<hr>
+
 
 ## 2023-06-12 - Minor fixes [0.1.20]
 ### Fixed

@@ -13,7 +13,6 @@ class FilesAndFolders:
             logger.debug(msg=f"{FilesAndFolders.create_folder.__name__}] - provided folder already exists: '{folderpath}', skipping..")
             return
         os.mkdir(path=folderpath)
-        logger.debug(msg=f"{FilesAndFolders.create_folder.__name__}] - created folder")
 
     @staticmethod
     def remove_folder(folderpath: str) -> None:
@@ -21,7 +20,6 @@ class FilesAndFolders:
             logger.debug(msg=f"{FilesAndFolders.remove_folder.__name__}] - provided folder cannot be removed: it does not exist: '{folderpath}', skipping..")
             return
         shutil.rmtree(folderpath)
-        logger.debug(msg=f"{FilesAndFolders.remove_folder.__name__}] - Removed folder {folderpath}")
 
     @staticmethod
     def create_empty_file(filepath: str, overwrite: bool = False) -> None:
@@ -65,7 +63,6 @@ class FilesAndFolders:
                 return
 
         # Copy
-        logger.debug(f"copying {source} to {destinationpath}")
         with open(destinationpath, 'w') as dst:
             with open(source, 'r') as src:
                 dst.write(src.read())
@@ -90,18 +87,8 @@ class FilesAndFolders:
             raise ValueError(f"{FilesAndFolders.move_file.__name__}] - cannot move file; target file already exists: {os.path.isdir(os.path.dirname(dstfilename))}")
 
         # Copy
-        logger.debug(f"moving {srcfilename} to {dstfilename}")
         shutil.move(src=srcfilename, dst=dstfilename)
 
-# todo delete
-# class CliTools:
-#     @staticmethod
-#     def pop_arg_or_exit(arglist: [str], errormessage: str):
-#         """ Tries to pop an arg from the list. If this is not possible: display errormessage and exit """
-#         if (len(arglist) <= 0):
-#             logger.error(msg=errormessage)
-#             quit()
-#         return arglist.pop(0).lower()
 
 
 def package_is_installed(package_import_name:str=None) -> bool:
