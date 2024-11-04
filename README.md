@@ -76,7 +76,7 @@ cythonbuilder.cy_clean(target_files=['some_name'])
 
 ```python
 import logging
-from cythonbuilder import logger
+from . import logger
 
 logger.setLevel(logging.DEBUG)
 ```

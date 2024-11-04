@@ -2,7 +2,7 @@ import logging
 
 # from coloredlogs import ColoredFormatter
 
-from cythonbuilder import appsettings
+from . import appsettings
 
 # DEFAULT_FIELD_STYLES = dict(
 #     asctime=dict(color='white'),
