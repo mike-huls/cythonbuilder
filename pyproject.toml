@@ -1,6 +1,6 @@
 [project]
 name = "cythonbuilder"
-version = "0.1.22"
+version = "0.1.23"
 description = "CythonBuilder; automated compiling and packaging of Cython code"
 authors = [{ name = "Mike Huls", email = "mikehuls42@gmail.com" }]
 license = { file = "LICENSE" }
