@@ -18,7 +18,7 @@ pip install cythonbuilder
 ```
 
 
-### Normal
+### Use CythonBuilder via the CLI
 Add `-v` (verbose) for more information 
 1. Listing files with and without filter
 ```commandline
@@ -40,7 +40,7 @@ cybuilder clean --no-cleanup
 
 <hr>
 
-### With Python
+### Use CythonBuilder via Python
 1. Listing files with and without filter
 
 ```python
@@ -80,6 +80,7 @@ from . import logger
 
 logger.setLevel(logging.DEBUG)
 ```
+
 
 ### In-depth, step by step Explanation
 I've written a few articles that explain why Python is slow, why Cython can be a solution and how CythonBuilder helps us develop fast code easily:
