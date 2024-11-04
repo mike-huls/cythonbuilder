@@ -1,6 +1,7 @@
 devtest/
 config/conf/*
 ext/
+stats/
 devtest/
 __.helpy
 __oldsetup.py

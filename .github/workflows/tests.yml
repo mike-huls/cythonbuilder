@@ -1,0 +1,40 @@
+name: Tests
+
+on:
+  push:
+    tags:
+      - "test-*"
+  schedule:
+    # cron every week on monday
+    - cron: "0 0 * * 1"
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install codecov uv
+        uv sync
+
+    - name: Run unit test
+      run: |
+        uv run coverage run --omit="test/*" -m pytest
+
+    - name: Create coverage
+      run: |
+        uv run coverage report
+        uv run coverage xml
+
+    - name: Push coverage to codecov
+      run: |
+        codecov -t "${{ secrets.CODECOV_TOKEN }}" --commit="${GITHUB_SHA}" --branch="master"
+

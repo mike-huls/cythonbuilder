@@ -1,12 +1,16 @@
-[tool.poetry]
+[project]
 name = "cythonbuilder"
 version = "0.1.22"
 description = "CythonBuilder; automated compiling and packaging of Cython code"
-authors = ["Mike Huls <m.huls@datanext.nl>"]
-license = "MIT"
+authors = [{ name = "Mike Huls", email = "mikehuls42@gmail.com" }]
+license = { file = "LICENSE" }
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "cython>=3.0.11",
+    "typer>=0.12.5",
+]
 keywords=["pypi", "Cython", "setup", "packaging", "compilation"]
-
 classifiers = [
     "Environment :: Console",
     "Operating System :: OS Independent",
@@ -14,33 +18,41 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Programming Language :: Cython",
+    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Cython"
 ]
-include = [
-    "LICENSE",
-]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-typer = "^0.7.0"
-cython = "^0.29.28"
-
-
-[tool.poetry.urls]
+[project.urls]
 "Homepage" = "https://github.com/mike-huls/cythonbuilder"
 "Bug Tracker" = "https://github.com/mike-huls/cythonbuilder/issues"
 "Documentation" = "https://github.com/mike-huls/cythonbuilder/blob/main/README.md/"
 "Source" = "https://github.com/mike-huls/cythonbuilder/"
 "Say Thanks!" = "https://www.buymeacoffee.com/mikehuls"
 
-[tool.poetry.scripts]
+[project.scripts]
 cythonbuilder = "cythonbuilder.cli:app"
 cybuilder = "cythonbuilder.cli:app"
 
+[tool.uv]
+dev-dependencies = [
+    "coverage>=7.6.4",
+    "pytest>=8.3.3",
+]
 
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.setuptools]
+license-files = ["LICENSE"]
