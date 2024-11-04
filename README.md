@@ -1,11 +1,12 @@
 # CythonBuilder: automated compiling and packaging of Cython code
-
-|         |                                                                                                                                                                                                                                                                                                                                                                                                               |
-|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Testing | ![coverage](https://img.shields.io/codecov/c/github/mike-huls/cythonbuilder)                                                                                                                                                                                                                                                                                                                                  |
-| Package | [![PyPI Latest Release](https://img.shields.io/pypi/v/cythonbuilder.svg)](https://pypi.org/project/cythonbuilder/) [![PyPI Downloads](https://img.shields.io/pypi/dm/cythonbuilder.svg?label=PyPI%20downloads)](https://pypistats.org/packages/cythonbuilder) <br/>![status](https://img.shields.io/pypi/status/cythonbuilder) ![dependencies](https://img.shields.io/librariesio/release/pypi/cythonbuilder) |
-| Meta    | ![GitHub License](https://img.shields.io/github/license/mike-huls/cythonbuilder) ![implementation](https://img.shields.io/pypi/implementation/cythonbuilder)  ![versions](https://img.shields.io/pypi/pyversions/cythonbuilder)                                                                                                                                                                               |
-| Social  | ![tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder) ![xfollow](https://img.shields.io/twitter/follow/mike_huls?style=social)                                                                                                                                                                                                                   | 
+![coverage](https://img.shields.io/codecov/c/github/mike-huls/cythonbuilder)
+![Tests](https://github.com/mike-huls/cythonbuilder/actions/workflows/tests.yml/badge.svg)
+![version](https://img.shields.io/pypi/v/cythonbuilder?color=%2334D058&label=pypi%20package)
+![dependencies](https://img.shields.io/librariesio/release/pypi/cythonbuilder)
+![PyPI Downloads](https://img.shields.io/pypi/dm/cythonbuilder.svg?label=PyPI%20downloads)
+![versions](https://img.shields.io/pypi/pyversions/cythonbuilder.svg?color=%2334D058)
+<br>
+![tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder) ![xfollow](https://img.shields.io/twitter/follow/mike_huls?style=social) 
 
 
 CythonBuilder makes it easy to use Cython in your Python project by automating the building process.
@@ -43,48 +44,45 @@ cybuilder clean --no-cleanup
 1. Listing files with and without filter
 
 ```python
+import cythonbuilder
 
-from cythonbuilderr import cythonbuilder as cybuilder
-
-print(cybuilder.cy_list())  # without a filter
-print(cybuilder.cy_list(target_files=['some_name.pyx']))  # with a filter
+print(cythonbuilder.cy_list())  # without a filter
+print(cythonbuilder.cy_list(target_files=['some_name.pyx']))  # with a filter
 ```
 
 2. Build with and without optional build arguments  (cleans automatically afterwards)
 
 ```python
+import cythonbuilder
 
-from src import cythonbuilder as cybuilder
+cythonbuilder.cy_build()
 
-cybuilder.cy_build()
-
-found_files = cybuilder.cy_build(target_files=['some_name'])
-cybuilder.cy_build(target_files=found_files, include_numpy=False, create_annotations=False)
+found_files = cythonbuilder.cy_build(target_files=['some_name'])
+cythonbuilder.cy_build(target_files=found_files, include_numpy=False, create_annotations=False)
 ```
 
 3. Clean
 
 ```python
+import cythonbuilder
 
-from src import cythonbuilder as cybuilder
+cythonbuilder.cy_clean()
 
-cybuilder.cy_clean()
-
-found_files = cybuilder.cy_build(target_files=['some_name'])
-cybuilder.cy_clean(target_files=['some_name'])
+found_files = cythonbuilder.cy_build(target_files=['some_name'])
+cythonbuilder.cy_clean(target_files=['some_name'])
 ```
 
 4. Setting debug level for verbose logging
 
 ```python
-from cythonbuilderr import logger
-from cythonbuilderr import set_logger_debug_mode
+import logging
+from cythonbuilder import logger
 
-set_logger_debug_mode(logger=logger)
+logger.setLevel(logging.DEBUG)
 ```
 
 ### In-depth, step by step Explanation
 I've written a few articles that explain why Python is slow, why Cython can be a solution and how CythonBuilder helps us develop fast code easily:
-- [Why Python is so slow and how to speed it up](https://mikehuls.medium.com/why-is-python-so-slow-and-how-to-speed-it-up-485b5a84154e)
-- [Getting started with Cython; how to perform >1.7 billion calculations per second with Python](https://mikehuls.medium.com/getting-started-with-cython-how-to-perform-1-7-billion-calculations-per-second-in-python-b83374cfcf77)
-- [Cython for data science: 6 steps to make this Pandas dataframe operation over 100x faster](https://mikehuls.medium.com/cython-for-data-science-6-steps-to-make-this-pandas-dataframe-operation-over-100x-faster-1dadd905a00b)
+- [Why Python is so slow and how to speed it up](https://mikehuls.com/why-is-python-so-slow-and-how-to-speed-it-up-6720e14a1ca260001b1c0cba)
+- [Getting started with Cython; how to perform >1.7 billion calculations per second with Python](https://mikehuls.com/getting-started-with-cython-how-to-perform-1-7-billion-calculations-per-second-in-python-6720e14a1ca260001b1c0ccf)
+- [Cython for data science: 6 steps to make this Pandas dataframe operation over 100x faster](https://mikehuls.com/cython-for-data-science-6-steps-to-make-this-pandas-dataframe-operation-over-100x-faster-6720e14a1ca260001b1c0d07/)
