@@ -1,12 +1,13 @@
 # CythonBuilder: automated compiling and packaging of Cython code
-![coverage](https://img.shields.io/codecov/c/github/mike-huls/cythonbuilder)
-![Tests](https://github.com/mike-huls/cythonbuilder/actions/workflows/tests.yml/badge.svg)
-![version](https://img.shields.io/pypi/v/cythonbuilder?color=%2334D058&label=pypi%20package)
-![dependencies](https://img.shields.io/librariesio/release/pypi/cythonbuilder)
-![PyPI Downloads](https://img.shields.io/pypi/dm/cythonbuilder.svg?label=PyPI%20downloads)
-![versions](https://img.shields.io/pypi/pyversions/cythonbuilder.svg?color=%2334D058)
+[![coverage](https://img.shields.io/codecov/c/github/mike-huls/cythonbuilder)](https://codecov.io/gh/mike-huls/cythonbuilder)
+[![Tests](https://github.com/mike-huls/cythonbuilder/actions/workflows/tests.yml/badge.svg)](https://github.com/mike-huls/cythonbuilder/actions/workflows/tests.yml)
+[![version](https://img.shields.io/pypi/v/cythonbuilder?color=%2334D058&label=pypi%20package)](https://pypi.org/project/cythonbuilder)
+[![dependencies](https://img.shields.io/librariesio/release/pypi/cythonbuilder)](https://pypi.org/project/cythonbuilder)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/cythonbuilder.svg?label=PyPI%20downloads)](https://pypistats.org/packages/cythonbuilder)
+[![versions](https://img.shields.io/pypi/pyversions/cythonbuilder.svg?color=%2334D058)](https://pypi.org/project/cythonbuilder)
 <br>
-![tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder) ![xfollow](https://img.shields.io/twitter/follow/mike_huls?style=social) 
+[![tweet](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder)](https://twitter.com/intent/tweet?text=Check%20this%20out:&url=https%3A%2F%2Fgithub.com%2Fmike-huls%2Fcythonbuilder) 
+[![xfollow](https://img.shields.io/twitter/follow/mike_huls)](https://twitter.com/intent/follow?screen_name=mike_huls)
 
 
 CythonBuilder makes it easy to use Cython in your Python project by automating the building process.
@@ -21,7 +22,7 @@ pip install cythonbuilder
 ### Use CythonBuilder via the CLI
 Add `-v` (verbose) for more information 
 1. Listing files with and without filter
-```commandline
+```commandlinead
 cybuilder list
 cybuilder list --files file1 file2.pyx
 ```
